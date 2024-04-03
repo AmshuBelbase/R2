@@ -1,14 +1,14 @@
 from machine import Pin, PWM, UART
 from ibus import IBus
 import utime
-m1_pwm= PWM(Pin(7, Pin.OUT))
-m1_dir=Pin(3, Pin.OUT)
-m2_pwm =PWM(Pin(6, Pin.OUT))
-m2_dir=Pin(2, Pin.OUT)
-m3_pwm= PWM(Pin(21, Pin.OUT))
-m3_dir=Pin(27, Pin.OUT)
-m4_pwm= PWM(Pin(20, Pin.OUT))
-m4_dir=Pin(26, Pin.OUT)
+m1_pwm= PWM(Pin(7))
+m1_dir=Pin(3,Pin.OUT)
+m2_pwm =PWM(Pin(6))
+m2_dir=Pin(2,Pin.OUT)
+m3_pwm= PWM(Pin(21))
+m3_dir=Pin(27,Pin.OUT)
+m4_pwm= PWM(Pin(20))
+m4_dir=Pin(26,Pin.OUT)
 
 ibus_in = IBus(1)
 mech_pico_signal_pin = Pin(15, Pin.OUT)
@@ -82,7 +82,11 @@ def calc_motor_speed(vx, vy, omega):
 while True:
     res = ibus_in.read()
     # if signal then display immediately
-#     if res[0] == 1:
+    if res[0] == 0:
+        drive(0,0,0,0)
+        print("Flysky Not Connected")
+        continue
+         
 #         print("Status {} CH 1 {} Ch 2 {} Ch 3 {} Ch 4 {} Ch 5 {} Ch 6 {} - {}".format(
 #             res[0],
 #             IBus.normalize(res[1]),
@@ -124,22 +128,28 @@ while True:
     if(omega == -2):
         omega = -1
     if(omega<=-1 and omega>=-100):
-        omega = map(omega, -100, -1, -400, 0)
+        omega = map(omega, -100, -1, -300, 0)
     elif(omega>-1 and omega<=98):
-        omega = map(omega, -1, 98, 0, 400)
+        omega = map(omega, -1, 98, 0, 300)
+        
         
     if vx ==0 and vy==0 and omega==0:
         drive(0,0,0,0)
+    if omega ==0:
+        w1, w2, w3, w4 = calc_motor_speed(vy, vx, omega)
+        print("Before Mapping")
+        print("W1: {}, W2: {}, W3: {}, W4: {}".format(w1,w2,w3,w4))
+        # Set motor speeds
+        wm1=int(map(w1, -1575, 1575, -19660, 19660))
+        wm2=int(map(w2, -1575, 1575, -19660, 19660))
+        wm3=int(map(w3, -1575, 1575, -19660, 19660))
+        wm4=int(map(w4, -1575, 1575, -19660, 19660))
+        print("After Mapping")
+        print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
         
-    w1, w2, w3, w4 = calc_motor_speed(vy, vx, omega)
-#     print("Before Mapping")
-#     print("W1: {}, W2: {}, W3: {}, W4: {}".format(w1,w2,w3,w4))
-    # Set motor speeds
-    wm1=int(map(w1, -1575, 1575, -19660, 19660))
-    wm2=int(map(w2, -1575, 1575, -19660, 19660))
-    wm3=int(map(w3, -1575, 1575, -19660, 19660))
-    wm4=int(map(w4, -1575, 1575, -19660, 19660))
-    print("After Mapping")
-    print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
-    drive(wm1,wm2,wm3,wm4)
-    utime.sleep_ms(10)
+        drive(wm1,wm2,wm3,wm4)
+        utime.sleep_ms(10)
+    elif omega > 5:
+        drive(15000,-15000,15000,-15000)
+    elif omega < -5:
+        drive(-15000, 15000, -15000, 15000)
