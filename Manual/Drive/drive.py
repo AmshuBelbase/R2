@@ -11,7 +11,7 @@ m4_pwm= PWM(Pin(20))
 m4_dir=Pin(26,Pin.OUT)
 
 ibus_in = IBus(1)
-mech_pico_signal_pin = Pin(15, Pin.OUT)
+mech_pico_signal_pin = Pin(14, Pin.OUT)
 
 # Function to convert the values
 def map(val, loval, hival, tolow, tohigh): 
