@@ -101,10 +101,10 @@ while True:
     mech_pico_signal = IBus.normalize(res[5])
     if(mech_pico_signal == -100):
         mech_pico_signal_pin.value(1)
-        print("Mech PICO HIGH")
+        # print("Mech PICO HIGH")
     elif(mech_pico_signal == 0):
         mech_pico_signal_pin.value(0)
-        print("Mech PICO LOW")
+        # print("Mech PICO LOW")
         
     vx = IBus.normalize(res[2])
     vy = IBus.normalize(res[1])
