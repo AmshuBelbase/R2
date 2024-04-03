@@ -18,7 +18,7 @@ class StepperMotor:
             sleep_ms(1)
             self.step1.off()
             self.step2.off()
-            sleep_ms(1)
+            #sleep_ms(1)
             
     def stepper_down(self, steps):
         self.dir1.on()
@@ -30,5 +30,5 @@ class StepperMotor:
             sleep_ms(1)
             self.step1.off()
             self.step2.off()
-            sleep_ms(1)
+            #sleep_ms(1)
 

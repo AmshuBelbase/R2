@@ -110,7 +110,7 @@ while True:
     vy = IBus.normalize(res[1])
     omega = IBus.normalize(res[4])
     
-    print(vx, vy, omega)
+#     print(vx, vy, omega)
     
     if(vx<=-6 and vx>=-100):
         vx = int(map(vx, -100, -6, -100, 0))
@@ -137,15 +137,15 @@ while True:
         drive(0,0,0,0)
     if omega ==0:
         w1, w2, w3, w4 = calc_motor_speed(vy, vx, omega)
-        print("Before Mapping")
-        print("W1: {}, W2: {}, W3: {}, W4: {}".format(w1,w2,w3,w4))
+#         print("Before Mapping")
+#         print("W1: {}, W2: {}, W3: {}, W4: {}".format(w1,w2,w3,w4))
         # Set motor speeds
         wm1=int(map(w1, -1575, 1575, -19660, 19660))
         wm2=int(map(w2, -1575, 1575, -19660, 19660))
         wm3=int(map(w3, -1575, 1575, -19660, 19660))
         wm4=int(map(w4, -1575, 1575, -19660, 19660))
-        print("After Mapping")
-        print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
+#         print("After Mapping")
+#         print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
         
         drive(wm1,wm2,wm3,wm4)
         utime.sleep_ms(10)

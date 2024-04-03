@@ -66,3 +66,10 @@ class Servo:
         """ Allows the servo to be moved freely.
         """
         self.__pwm.duty_u16(0)
+        
+    def get_position(self) -> int:
+        """Returns the current position of the servo."""
+        duty = self.__pwm.duty_u16()
+        delta = self.maxVal - self.minVal
+        position = int(((duty - self.minVal) / delta) * 1024)
+        return position
