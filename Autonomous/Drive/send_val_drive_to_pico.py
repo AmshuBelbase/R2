@@ -2,25 +2,21 @@ import serial
 import time
 import random
 
-serial_port = '/dev/ttyACM0'
-baud_rate = 115200
-ser = serial.Serial(serial_port, parity=serial.PARITY_EVEN,
-                    stopbits=serial.STOPBITS_ONE, baudrate=baud_rate, timeout = 0.1)
+s = serial.Serial(port="/dev/ttyACM0", parity=serial.PARITY_EVEN,
+                  stopbits=serial.STOPBITS_ONE, timeout=1)
 
 
 class trying:
     def _init_(self):
         while True:
-            trying.call_back(ser)
+            trying.call_back(s)
 
     @staticmethod
     def call_back(ser):
         ser.flush()
-        # Open serial port
-        # time.sleep(0.5)
         at = time.time()
         print("Start", at)
-        # Define floats to send
+
         float1 = random.randint(0, 255)
         float2 = random.randint(0, 255)
         float3 = random.randint(0, 255)
@@ -37,6 +33,7 @@ class trying:
         print(f"Sent: {data}")
         print("End", time.time())
         print("Time taken", time.time() - at)
+        time.sleep(0.005)
 
 
 if __name__ == "__main__":
