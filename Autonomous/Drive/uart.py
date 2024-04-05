@@ -11,4 +11,4 @@ while True:
         ch = sys.stdin.readline()
         d = [int(num.strip()) for num in ch.split('|')]
         print(d)
-        time.sleep(3)
+        time.sleep(3)

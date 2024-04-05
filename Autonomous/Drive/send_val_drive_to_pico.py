@@ -5,7 +5,7 @@ import random
 serial_port = '/dev/ttyACM0'
 baud_rate = 115200
 ser = serial.Serial(serial_port, parity=serial.PARITY_EVEN,
-                    stopbits=serial.STOPBITS_ONE, baudrate=baud_rate)
+                    stopbits=serial.STOPBITS_ONE, baudrate=baud_rate, timeout = 0.1)
 
 
 class trying:
@@ -39,5 +39,5 @@ class trying:
         print("Time taken", time.time() - at)
 
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     obj = trying()

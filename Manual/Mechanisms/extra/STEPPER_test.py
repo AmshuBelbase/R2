@@ -1,5 +1,5 @@
 from machine import Pin
-from time import sleep_ms, sleep
+from time import sleep_us, sleep
 
 step1 = Pin(13, Pin.OUT)
 dir1 = Pin(12, Pin.OUT)
@@ -25,12 +25,13 @@ def stepper_down(steps):
     for _ in range(steps):
         step1.on()
         step2.on()
-        sleep_ms(1)
+        sleep_us(450)
         step1.off()
         step2.off()
-        sleep_ms(1)
+        sleep_us(450)
+        print("ok")
 
 while True:
-    stepper_down(1000)
+    stepper_down(10000)
     print("Stepping")
     sleep(0.2)
