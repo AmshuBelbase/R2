@@ -27,7 +27,9 @@ def Core0():
 def Core1():
     global data
     while True:
+#         if(data!=[]):
         print("received data:", data)
+        data = []
         time.sleep(2)
 
 

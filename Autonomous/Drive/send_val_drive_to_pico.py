@@ -7,7 +7,7 @@ s = serial.Serial(port="/dev/ttyACM0", parity=serial.PARITY_EVEN,
 
 
 class trying:
-    def _init_(self):
+    def __init__(self):
         while True:
             trying.call_back(s)
 
@@ -36,5 +36,5 @@ class trying:
         time.sleep(0.005)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     obj = trying()
