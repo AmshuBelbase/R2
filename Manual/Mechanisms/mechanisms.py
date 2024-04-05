@@ -68,7 +68,7 @@ while True:
 #             distance = ultrasonic_sensor.measure_distance()
 #             if(distance<20):
 #                 distance = ultrasonic_sensor.measure_distance()
-        stepper_motor.stepper_up(3900)
+        stepper_motor.stepper_up(4000)
         stepper_up = 1
     elif (pin_value == 0 and flag != 0):
         servo_motor1.goto(860)
@@ -76,6 +76,6 @@ while True:
         bldc_motor.set_speed(0)
         flag = 0
         if (stepper_up == 1):
-            stepper_motor.stepper_down(3500)
+            stepper_motor.stepper_down(4000)
             stepper_up = 0
     time.sleep(0.01)
