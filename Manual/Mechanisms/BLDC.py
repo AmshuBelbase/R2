@@ -7,6 +7,8 @@ class BLDCMotor:
         self.pwm.freq(9000)
         self.dir1 = Pin(dir_pin1, Pin.OUT)
         self.dir2 = Pin(dir_pin2, Pin.OUT)
+        self.dir1.low()
+        self.dir2.low()
         self.speed = 0
 
     def set_speed(self, speed):

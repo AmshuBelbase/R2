@@ -27,11 +27,11 @@ def Core0():
 def Core1():
     global data
     while True:
-#         if(data!=[]):
-        print("received data:", data)
-        data = []
-        time.sleep(2)
-
+        if(data!=[]):
+            print(data[0], time.time()," received data:- 1: ", data[1], " 2: ", data[2], " 3: ", data[3], " 2: ", data[4])
+            data = []
+            time.sleep(3)
+        time.sleep(0.01)
 
 _thread.start_new_thread(Core1, ())
 

@@ -138,8 +138,8 @@ while True:
         wm2 = int(map(w2, -1575, 1575, -19660, 19660))
         wm3 = int(map(w3, -1575, 1575, -19660, 19660))
         wm4 = int(map(w4, -1575, 1575, -19660, 19660))
-#         print("After Mapping")
-#         print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
+        print("After Mapping")
+        print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
 
         drive(wm1, wm2, wm3, wm4)
         utime.sleep_ms(10)
