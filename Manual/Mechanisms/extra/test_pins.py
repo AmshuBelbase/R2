@@ -2,7 +2,7 @@ import machine
 import utime
 
 # Define the GPIO pins available on the Pico
-pins = [machine.Pin(pin_num, machine.Pin.OUT) for pin_num in range(28)]
+pins = [machine.Pin(pin_num, machine.Pin.OUT) for pin_num in range(29)]
 
 while(True):
     print("high")
@@ -17,3 +17,4 @@ while(True):
     for pin in pins:
         pin.low()
     utime.sleep(1)
+
