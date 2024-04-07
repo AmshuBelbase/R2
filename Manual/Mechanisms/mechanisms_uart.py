@@ -1,6 +1,5 @@
 from machine import Pin, UART, PWM
-from servo import Servo
-from BLDC import BLDCMotor
+from servo import Servo 
 from Stepper import StepperMotor
 from Ultrasonic import UltrasonicSensor
 import time
@@ -14,15 +13,14 @@ roller_servo1_pin = 19
 roller_servo2_pin = 18
 
 # gate servo
-gate_servo_pin = 17
+gate_servo_pin = 16
 
 # push servo
-push_servo_pin = 16
+push_servo_pin = 17
 
 # roller dc motor
-pwm_pin = 27
-dc_dir_pin1 = 26
-dc_dir_pin2 = 28
+roller_pin1 = Pin(27, Pin.OUT)
+roller_pin2 = Pin(28, Pin.OUT)
 
 # elevator steppers
 elevator_step1_pin = 13
@@ -42,7 +40,6 @@ roller_servo_motor1 = Servo(roller_servo1_pin)
 roller_servo_motor2 = Servo(roller_servo2_pin)
 gate_servo = Servo(gate_servo_pin)
 push_servo = Servo(push_servo_pin)
-bldc_motor = BLDCMotor(pwm_pin, dc_dir_pin1, dc_dir_pin2)
 stepper_motor = StepperMotor(
     elevator_step1_pin, elevator_dir1_pin, elevator_step2_pin, elevator_dir2_pin)
 steps = 0
@@ -51,8 +48,7 @@ y_deg = 1024 - x_deg
 roller_servo_motor1.goto(x_deg)
 roller_servo_motor2.goto(y_deg)
 gate_servo.goto(0)
-push_servo.goto(1024)
-bldc_motor.set_speed(0)
+push_servo.goto(1024) 
 
 stepper_up = 0
  
@@ -70,13 +66,15 @@ while True:
         if(feed_mech < -50):
             print("feed_mech on")
             print("Started Roller")
-            bldc_motor.set_speed(-100)
+            roller_pin1.value(1)
+            roller_pin2.value(0)
             time.sleep(0.05)
             roller_servo_motor1.goto(0) 
             roller_servo_motor2.goto(1024) 
             gate_servo.goto(350) 
         else:  
-            bldc_motor.set_speed(0)   
+            roller_pin1.value(0)
+            roller_pin2.value(0)
             roller_servo_motor1.goto(860)
             roller_servo_motor2.goto(164)
             gate_servo.goto(0)
