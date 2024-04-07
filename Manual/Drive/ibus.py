@@ -31,7 +31,7 @@ class IBus ():
     def __init__(self, uart_num, baud=115200, num_channels=6):
         self.uart_num = uart_num
         self.baud = baud
-        self.uart = UART(self.uart_num, self.baud, tx=Pin(4), rx=Pin(5))
+        self.uart = UART(self.uart_num, self.baud, tx=Pin(0), rx=Pin(1))
         self.num_channels = num_channels
         # ch is channel value
         self.ch = []
