@@ -130,6 +130,15 @@ while True:
         omega = map(omega, -100, -1, -300, 0)
     elif (omega > -1 and omega <= 98):
         omega = map(omega, -1, 98, 0, 300)
+    
+    if(abs(vy) == 0):
+        if(abs(vx) < 50):
+            vx = vx//2
+            
+    if(abs(vx) == 0):        
+        if(abs(vy) < 50):
+            vy = vy//2
+    
 
     if vx == 0 and vy == 0 and omega == 0:
         drive(0, 0, 0, 0)
@@ -147,10 +156,10 @@ while True:
 
         drive(wm1, wm2, wm3, wm4)
         utime.sleep_ms(10)
-    elif omega > 5:
-        drive(15000, -15000, 15000, -15000)
-    elif omega < -5:
-        drive(-15000, 15000, -15000, 15000)
+    elif omega > 50:
+        drive(9000, -9000, 9000, -9000)
+    elif omega < -50:
+        drive(-9000, 9000, -9000, 9000)
 
 
 

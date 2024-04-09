@@ -35,18 +35,18 @@ echo_pin = 22
 distance = 50
 
 ultrasonic_sensor = UltrasonicSensor(trigger_pin, echo_pin)
-roller_servo_motor1 = Servo(roller_servo1_pin)
-roller_servo_motor2 = Servo(roller_servo2_pin)
+roller_servo1 = Servo(roller_servo1_pin)
+roller_servo2 = Servo(roller_servo2_pin)
 gate_servo = Servo(gate_servo_pin)
 push_servo = Servo(push_servo_pin)
 stepper_motor = StepperMotor(elevator_step1_pin, elevator_dir1_pin)
 steps = 0
 x_deg = 900
 y_deg = 1024 - x_deg
-roller_servo_motor1.goto(x_deg)
-roller_servo_motor2.goto(y_deg)
+roller_servo1.goto(x_deg)
+roller_servo2.goto(y_deg)
 gate_servo.goto(0)
-push_servo.goto(1024) 
+push_servo.goto(500) 
 
 stepper_up = 0
  
@@ -61,37 +61,50 @@ while True:
         else:
             continue
         print(step_up_down, feed_mech, push_mech)
-        if(feed_mech < -50):
+        if(feed_mech < -50 and stepper_up == 0):
             print("feed_mech on")
             print("Started Roller")
             roller_pin1.value(1)
             roller_pin2.value(0)
             time.sleep(0.05)
-            roller_servo_motor1.goto(0) 
-            roller_servo_motor2.goto(1024) 
-            gate_servo.goto(350) 
-        else:  
+#             gate_servo.goto(350) 
+            roller_servo1.goto(0) 
+            roller_servo2.goto(1024)             
+        elif(stepper_up == 1):  
+            roller_servo1.goto(312)
+            roller_servo2.goto(712)
+        else:
             roller_pin1.value(0)
             roller_pin2.value(0)
-            roller_servo_motor1.goto(860)
-            roller_servo_motor2.goto(164)
-            gate_servo.goto(0)
+            roller_servo1.goto(860)
+            roller_servo2.goto(164)
+            
             
         if(step_up_down < -80 and stepper_up == 0):
             print("step_up")
-            stepper_motor.stepper_up(8000)
+            gate_servo.goto(0)
+            push_servo.goto(500) 
+            stepper_motor.stepper_up(8250)
             stepper_up = 1
         elif(step_up_down > 80 and stepper_up == 1):
             print("step_down")
-            stepper_motor.stepper_down(8000)
+            gate_servo.goto(0)
+            push_servo.goto(500) 
+            stepper_motor.stepper_down(8250) 
             stepper_up = 0
-            
+    
         if(push_mech > 50):
             print("push_mech on")
-            push_servo.goto(500)
-        else: 
             push_servo.goto(1024)
+            gate_servo.goto(350) 
+        else: 
+            push_servo.goto(500)
+            gate_servo.goto(0)
     else:
         print("Waiting")
     time.sleep(0.01)
- 
+
+
+
+
+
