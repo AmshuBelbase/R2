@@ -1,5 +1,5 @@
 from machine import Pin
-from time import sleep_ms
+from time import sleep_ms, sleep_us
 
 
 class StepperMotor:
@@ -12,15 +12,16 @@ class StepperMotor:
 
         for _ in range(steps):
             self.step1.on() 
-            sleep_ms(1)
+            sleep_us(500)
             self.step1.off() 
-            sleep_ms(1)
+            sleep_us(500)
 
     def stepper_down(self, steps):
         self.dir1.on() 
 
         for _ in range(steps):
             self.step1.on() 
-            sleep_ms(1)
+            sleep_us(500)
             self.step1.off() 
-            sleep_ms(1)
+            sleep_us(500)
+

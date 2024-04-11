@@ -82,15 +82,17 @@ while True:
             
         if(step_up_down < -80 and stepper_up == 0):
             print("step_up")
+            roller_servo1.goto(312)
+            roller_servo2.goto(712)
             gate_servo.goto(0)
             push_servo.goto(500) 
-            stepper_motor.stepper_up(8250)
+            stepper_motor.stepper_up(2050)
             stepper_up = 1
         elif(step_up_down > 80 and stepper_up == 1):
             print("step_down")
             gate_servo.goto(0)
             push_servo.goto(500) 
-            stepper_motor.stepper_down(8250) 
+            stepper_motor.stepper_down(2050) 
             stepper_up = 0
     
         if(push_mech > 50):
@@ -103,6 +105,11 @@ while True:
     else:
         print("Waiting")
     time.sleep(0.01)
+
+
+
+
+
 
 
 
