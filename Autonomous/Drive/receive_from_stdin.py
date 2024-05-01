@@ -3,7 +3,7 @@ import sys
 import time
 import _thread
 from machine import Pin
-
+print("Started")
 led = Pin(25, Pin.OUT)
 
 data = []
@@ -28,10 +28,9 @@ def Core1():
     global data
     while True:
         if(data!=[]):
-            print(data[0], time.time()," received data:- 1: ", data[1], " 2: ", data[2], " 3: ", data[3], " 2: ", data[4])
+            print(" received data:- 1: ", data[0], " 2: ", data[1], " 3: ", data[2], " 4: ", data[3])
             data = []
-            time.sleep(3)
-        time.sleep(0.01)
+#             time.sleep(3) 
 
 _thread.start_new_thread(Core1, ())
 
