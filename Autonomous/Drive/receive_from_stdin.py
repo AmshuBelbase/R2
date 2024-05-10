@@ -29,8 +29,8 @@ def Core1():
     while True:
         if(data!=[]):
             print(" received data:- 1: ", data[0], " 2: ", data[1], " 3: ", data[2], " 4: ", data[3])
+            time.sleep_ms(30)
             data = []
-#             time.sleep(3) 
 
 _thread.start_new_thread(Core1, ())
 

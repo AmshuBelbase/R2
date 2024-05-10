@@ -43,13 +43,23 @@ stepper_motor = StepperMotor(elevator_step1_pin, elevator_dir1_pin)
 steps = 0
 x_deg = 900
 y_deg = 1024 - x_deg
-roller_servo1.goto(x_deg)
-roller_servo2.goto(y_deg)
+# roller_servo1.goto(x_deg)
+# roller_servo2.goto(y_deg)
+x_deg = roller_servo1.get_position()
+
+while x_deg != 1024:
+    if(x_deg > 1024):
+        x_deg = x_deg -1
+    else:
+        x_deg = x_deg +1 
+    y_deg = 1024 - x_deg
+    roller_servo1.goto(x_deg) 
+    roller_servo2.goto(y_deg)
+    time.sleep_us(1000)
 gate_servo.goto(0)
 push_servo.goto(500) 
 
-stepper_up = 0
- 
+stepper_up = 0 
 
 while True:
     if uart.any():
@@ -67,23 +77,66 @@ while True:
             roller_pin1.value(1)
             roller_pin2.value(0)
             time.sleep(0.05)
-#             gate_servo.goto(350) 
-            roller_servo1.goto(0) 
-            roller_servo2.goto(1024)             
+#             gate_servo.goto(350)
+            
+#             roller_servo1.goto(0) 
+#             roller_servo2.goto(1024)
+            x_deg = roller_servo1.get_position()
+            while x_deg != 0:
+                if(x_deg > 0):
+                    x_deg = x_deg -1
+                else:
+                    x_deg = x_deg +1
+                y_deg = 1024 - x_deg
+                roller_servo1.goto(x_deg) 
+                roller_servo2.goto(y_deg)
+                time.sleep_us(1000)
         elif(stepper_up == 1):  
-            roller_servo1.goto(312)
-            roller_servo2.goto(712)
+#             roller_servo1.goto(312)
+#             roller_servo2.goto(712)
+            x_deg = roller_servo1.get_position()
+            while x_deg != 312:
+                if(x_deg > 312):
+                    x_deg = x_deg -1
+                else:
+                    x_deg = x_deg +1 
+                y_deg = 1024 - x_deg
+                roller_servo1.goto(x_deg) 
+                roller_servo2.goto(y_deg)
+                time.sleep_us(1000)
         else:
             roller_pin1.value(0)
             roller_pin2.value(0)
-            roller_servo1.goto(860)
-            roller_servo2.goto(164)
+            
+#             roller_servo1.goto(890)
+#             roller_servo2.goto(134)
+            
+            x_deg = roller_servo1.get_position()
+            while x_deg != 890:
+                if(x_deg > 890):
+                    x_deg = x_deg -1
+                else:
+                    x_deg = x_deg +1 
+                y_deg = 1024 - x_deg
+                roller_servo1.goto(x_deg) 
+                roller_servo2.goto(y_deg)
+                time.sleep_us(1000)
             
             
         if(step_up_down < -80 and stepper_up == 0):
             print("step_up")
-            roller_servo1.goto(312)
-            roller_servo2.goto(712)
+#             roller_servo1.goto(312)
+#             roller_servo2.goto(712)
+            x_deg = roller_servo1.get_position()
+            while x_deg != 312:
+                if(x_deg > 312):
+                    x_deg = x_deg -1
+                else:
+                    x_deg = x_deg +1 
+                y_deg = 1024 - x_deg
+                roller_servo1.goto(x_deg) 
+                roller_servo2.goto(y_deg)
+                time.sleep_us(1000)
             gate_servo.goto(0)
             push_servo.goto(500) 
             stepper_motor.stepper_up(2050)
@@ -105,6 +158,7 @@ while True:
     else:
         print("Waiting")
     time.sleep(0.01)
+
 
 
 

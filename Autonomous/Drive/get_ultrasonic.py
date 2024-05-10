@@ -1,8 +1,8 @@
 from machine import Pin
 import time
  
-trigger = Pin(17, Pin.OUT)
-echo = Pin(16, Pin.IN)
+front_right_trig = Pin(11, Pin.OUT)
+front_right_echo = Pin(10, Pin.IN)
 
 def measure_distance(trigger, echo):
     # Send a 10us pulse to trigger the sensor
@@ -33,6 +33,6 @@ def measure_distance(trigger, echo):
     return distance
 
 while True:
-    us_val = measure_distance(trigger, echo)
+    us_val = measure_distance(front_right_trig, front_right_echo)
     print("Distance:", us_val)
-    time.sleep_us(100)
+    time.sleep_ms(1000)

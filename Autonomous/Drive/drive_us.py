@@ -11,17 +11,23 @@ m3_dir = Pin(27, Pin.OUT)
 m4_pwm = PWM(Pin(20))
 m4_dir = Pin(26, Pin.OUT)
 
-front_left_trig = Pin(17, Pin.OUT)
-front_left_echo = Pin(16, Pin.IN)
+front_left_trig = Pin(19, Pin.OUT)
+front_left_echo = Pin(18, Pin.IN)
 
-front_right_trig = Pin(12, Pin.OUT)
-front_right_echo = Pin(13, Pin.IN)
+front_right_trig = Pin(11, Pin.OUT)
+front_right_echo = Pin(10, Pin.IN)
 
-left_front_trig = Pin(19, Pin.OUT)
-left_front_echo = Pin(18, Pin.IN)
+left_front_trig = Pin(13, Pin.OUT)
+left_front_echo = Pin(12, Pin.IN)
 
 left_back_trig = Pin(22, Pin.OUT)
 left_back_echo = Pin(28, Pin.IN)
+
+right_front_trig = Pin(17, Pin.OUT)
+right_front_echo = Pin(16, Pin.IN)
+
+led_pin = Pin(25, Pin.OUT)
+led_pin.value(0)
 
 def drive(speed1, speed2, speed3, speed4):
 
@@ -94,58 +100,124 @@ def measure_distance(trigger, echo):
     return distance
 
 print("Started")
-time.sleep(15)
+# while True:
+drive(0,0,0,0)
+d = 18000
+i = 1
+led_pin.value(0)
+while i<=3:
+    i=i+1
+    led_pin.value(1)
+    time.sleep_ms(500)
+    led_pin.value(0)
+    time.sleep_ms(500)
+led_pin.value(1)
+
+
+# while True:
+#     print("loop")
+#     
+#     left_front_us = measure_distance(left_front_trig, left_front_echo)  
+#     print("Left Front: ", left_front_us)
+# 
+#     left_back_us = measure_distance(left_back_trig, left_back_echo)  
+#     print("Left Back: ", left_back_us)
+#     front_right_us = measure_distance(front_right_trig, front_right_echo)
+#     print("Front Right: ", front_right_us)
+#     right_front_us = measure_distance(right_front_trig, right_front_echo)  
+#     print("Right Front: ", right_front_us)
+#     front_left_us = measure_distance(front_left_trig, front_left_echo) 
+#     print("Front Left: ", front_left_us)
+#     
+#     time.sleep(1)
+
+
 while True:
-    front_left_us1 = measure_distance(front_left_trig, front_left_echo) #front_right_trig
-    if(front_left_us1 < 10):
-        front_left_us2 = measure_distance(front_left_trig, front_left_echo)
-        front_left_us = (front_left_us1+front_left_us2)//2
-    else:
-        front_left_us = front_left_us1 
-    
-    print("Front Left: ", front_left_us)
-    
-    front_right_us1 = measure_distance(front_right_trig, front_right_echo)
-    if(front_right_us1 < 10):
-        front_right_us2 = measure_distance(front_right_trig, front_right_echo)
-        front_right_us = (front_right_us1+front_right_us2)//2
-    else:
-        front_right_us = front_right_us1
-        
-    
+    print("loop")
+    front_right_us = measure_distance(front_right_trig, front_right_echo)
     print("Front Right: ", front_right_us)
+
+    front_left_us = measure_distance(front_left_trig, front_left_echo) 
+    print("Front Left: ", front_left_us)
+
+    left_front_us = measure_distance(left_front_trig, left_front_echo)  
+    print("Left Front: ", left_front_us)
+
+    left_back_us = measure_distance(left_back_trig, left_back_echo)  
+    print("Left Back: ", left_back_us)
+
+    right_front_us = measure_distance(right_front_trig, right_front_echo)  
+    print("Right Front: ", right_front_us)
     
-    left_front_us = measure_distance(left_front_trig, left_front_echo)
-    print("Left 1: ", left_front_us)
-    
-    left_back_us = measure_distance(left_back_trig, left_back_echo)
-    print("Left 2: ", left_back_us)
-     
-    
-    if(front_left_us <= 80): # move right when front less than 80
-        print(" Move Right >>>>>>>>>>>>")
-        drive(-7500,0,7500,0) 
-    elif(front_left_us > 80 and (left_front_us < 100 and left_back_us < 100)): # when left less than 100 and front <10 and >80
-        if(left_front_us > 80 or left_back_us > 80):
-            print("Stop1 ..................")
-            drive(0,0,0,0)
-        elif(left_front_us < 13 and left_back_us < 13):
-            print("Diagonal Front Right ///////////////")
-            drive(-7500,-7500,7500,7500)
-        elif(left_front_us > 20 and left_back_us > 20):
-            print("Diagonal Front Left \\\\\\\\\\\\\\\\\\")
-            drive(7500,-7500,-7500,7500)
-        elif(left_front_us > left_back_us and (left_front_us - left_back_us) > 6):
-            print("Anti - Clockwise <<<<<<<<<<<\\\\\\\\\\\\")
-            drive(2500,-2500,2500,-2500)
-        elif(left_back_us > left_front_us and (left_back_us - left_front_us) > 6):
-            print("Clockwise >>>>>>>>>>>>>>>>>>///////////////")
-            drive(-2500,2500,-2500,2500)
-        else:
-            print("Straight ||||||||||||||")
-            drive(0,-9000,0,9000) 
+    if(front_left_us <=140 and front_right_us <= 140):
+        d = 9000 # 7000
     else:
-        print("Stop2 ..................")
+        d = 18000 # 18000
+    if(right_front_us <128 and front_left_us <= 45 and front_right_us <= 45):
+        print("Move Left 4")
+        drive(5500,0,-5500,0) # 4000
+    elif(front_left_us <= 45 and front_right_us <= 45):
+        if(abs(front_left_us-front_right_us) >= 3):
+            if(front_left_us > front_right_us):
+                print("Clockwise 1")
+                drive(-3500,3500,-3500,3500) # 2500
+            else:
+                print("Anti Clockwise 1")
+                drive(3500,-3500,3500,-3500) # 2500
+        elif(front_left_us <= 10 and front_right_us <= 10):
+            print("Digonal Back Right 1")
+            drive(4500,4500,4500,-4500) # 3000
+        elif(front_left_us <= 20 and front_right_us <= 20 and right_front_us > 160):
+            print("Move Right 1")
+            drive(-18000,0,18000,0) #18000
+        else:
+            print("Diagonal Front Right 1")
+            drive(-4500,-4500,4500,4500) # 3000
+    elif(left_front_us <= 45 and left_back_us <= 45):
+        if(abs(left_front_us-left_back_us) >= 4):
+            if(left_back_us > left_front_us):
+                print("Clockwise 2")
+                drive(-3500,3500,-3500,3500) # 2500
+            else:
+                print("Anti Clockwise 2")
+                drive(3500,-3500,3500,-3500)  # 2500
+        elif(left_front_us <= 10 and left_back_us <= 10):
+            print("Diagonal Front Right 2")
+            drive(-6000,-6000,6000,6000) # 5000
+        elif(left_front_us <= 27 and left_back_us <= 27):
+            print("Straight 2")
+            drive(0,-d,0,d)
+        else:
+            print("Diagonal Front Left 2")
+            drive(6000,-6000,-6000,6000) #5000
+    elif(right_front_us >=118 and right_front_us <=128):
+        print("Moving straight for 2.5 seconds 3")
+        drive(0,-36000,0,36000) # 30000
+        time.sleep_ms(1750)
+        print("Anticlockwise for 1 seconds 3")
+        drive(12000,-12000,12000,-12000) #10000
+        time.sleep_ms(500)
+        print("Stop 3")
         drive(0,0,0,0)
-    time.sleep_us(100)
+        break
+    elif(right_front_us <128):
+        print("Move Left 4")
+        drive(5500,0,-5500,0) # 4000
+    elif(right_front_us <= 160):
+        print("Moving right 5")
+        drive(-5500,0,5500,0) # 4000
+    elif(front_right_us > 45 and front_left_us < 45):
+        print("Moving right 6")
+        drive(-5500,0,5500,0) # 4000
+    else:
+        print("Stop - Confused 7")
+        drive(0,0,0,0)
+        break
+    time.sleep_ms(100)
+
+
+
+
+
+
 
