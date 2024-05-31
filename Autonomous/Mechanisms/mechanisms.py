@@ -76,9 +76,10 @@ def measure_distance(trigger, echo):
 
 
 time.sleep(1)
-
-while True: 
+print("Started")
+while True:
     if uart.any():
+        print("received")
         message_bytes = uart.read()
         message = message_bytes.decode('utf-8')
         li = list(message.split(","))
@@ -87,23 +88,35 @@ while True:
         else:
             continue
     if(drive_stat == 1):
-        print(" ")
-        front_ball_left_us = measure_distance(front_ball_left_trig, front_ball_left_echo)
-        print("Front Ball at left: ", front_ball_left_us)
+        print("loop")
+        x_deg = roller_servo1.get_position() 
+        while x_deg != 150:
+            if(x_deg > 150):
+                x_deg = x_deg -1
+            else:
+                x_deg = x_deg +1 
+            y_deg = 1024 - x_deg
+            roller_servo1.goto(x_deg) 
+            roller_servo2.goto(y_deg)
+            
         front_ball_right_us = measure_distance(front_ball_right_trig, front_ball_right_echo)
         print("Front Ball at right: ", front_ball_right_us)
+        
+        front_ball_left_us = measure_distance(front_ball_left_trig, front_ball_left_echo)
+        print("Front Ball at left: ", front_ball_left_us)
         if((front_ball_left_us < 13 or front_ball_right_us < 13) and (front_ball_left_us > 2 and front_ball_right_us > 2)): # front_ball_left_us < 15 and front_ball_right_us < 15
             drive_stat = 0
-            message = "{},{},{}".format(drive_stat)
+            message = "{}".format(drive_stat)
             print(message)
             message_bytes = message.encode('utf-8')
             uart.write(message_bytes)
+            
             print("Started Roller")
             roller_pin1.value(1)
             roller_pin2.value(0)
             time.sleep(0.75)
+            
             x_deg = roller_servo1.get_position() 
-
             while x_deg != 950:
                 if(x_deg > 950):
                     x_deg = x_deg -1
@@ -114,16 +127,17 @@ while True:
                 roller_servo2.goto(y_deg)
                 time.sleep_us(1000)
             time.sleep(3)
+            
             drive_stat = 1
-            message = "{},{},{}".format(drive_stat)
+            message = "{}".format(drive_stat)
             print(message)
             message_bytes = message.encode('utf-8')
             uart.write(message_bytes)
         else:
             roller_pin1.value(0)
             roller_pin2.value(0)
+            
             x_deg = roller_servo1.get_position() 
-
             while x_deg != 150:
                 if(x_deg > 150):
                     x_deg = x_deg -1
@@ -133,19 +147,16 @@ while True:
                 roller_servo1.goto(x_deg) 
                 roller_servo2.goto(y_deg)
                 time.sleep_us(1000)
-            drive_stat = 1
-            message = "{},{},{}".format(drive_stat)
-            print(message)
-            message_bytes = message.encode('utf-8')
-            uart.write(message_bytes)
+                
+#             drive_stat = 1
+#             message = "{}".format(drive_stat)
+#             print(message)
+#             message_bytes = message.encode('utf-8')
+#             uart.write(message_bytes)
+
             time.sleep(2)
-        if uart.any():
-            message_bytes = uart.read()
-            message = message_bytes.decode('utf-8')
-            print(message)
-            li = list(message.split(","))
         time.sleep_ms(90)
-    time.sleep_ms(10)
+    time.sleep_ms(5)
 
 
 
@@ -258,8 +269,7 @@ while True:
 #     else:
 #         print("Waiting")
 #     time.sleep(0.01)
-
-
+ 
 
 
 

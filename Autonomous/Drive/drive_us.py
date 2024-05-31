@@ -2,29 +2,58 @@ from machine import Pin, PWM, UART
 import utime
 import time
 
-m1_pwm = PWM(Pin(7))
-m1_dir = Pin(3, Pin.OUT)
-m2_pwm = PWM(Pin(6))
-m2_dir = Pin(2, Pin.OUT)
-m3_pwm = PWM(Pin(21))
-m3_dir = Pin(27, Pin.OUT)
-m4_pwm = PWM(Pin(20))
-m4_dir = Pin(26, Pin.OUT)
+m1_pwm = PWM(Pin(21))
+m1_dir = Pin(26, Pin.OUT)
+m2_pwm = PWM(Pin(20))
+m2_dir = Pin(22, Pin.OUT)
 
-front_left_trig = Pin(19, Pin.OUT)
-front_left_echo = Pin(18, Pin.IN)
+m3_pwm = PWM(Pin(17))
+m3_dir = Pin(19, Pin.OUT)
+m4_pwm = PWM(Pin(16))
+m4_dir = Pin(18, Pin.OUT)
 
-front_right_trig = Pin(11, Pin.OUT)
-front_right_echo = Pin(10, Pin.IN)
+left_back_trig = Pin(3, Pin.OUT)
+left_back_echo = Pin(4, Pin.IN)
 
-left_front_trig = Pin(13, Pin.OUT)
-left_front_echo = Pin(12, Pin.IN)
+left_front_trig = Pin(7, Pin.OUT)
+left_front_echo = Pin(6, Pin.IN)
 
-left_back_trig = Pin(22, Pin.OUT)
-left_back_echo = Pin(28, Pin.IN)
+front_left_trig = Pin(9, Pin.OUT)
+front_left_echo = Pin(8, Pin.IN)
 
-right_front_trig = Pin(17, Pin.OUT)
-right_front_echo = Pin(16, Pin.IN)
+front_right_trig = Pin(15, Pin.OUT)
+front_right_echo = Pin(14, Pin.IN)
+
+right_front_trig = Pin(13, Pin.OUT)
+right_front_echo = Pin(12, Pin.IN)
+
+
+
+# m1_pwm = PWM(Pin(7))
+# m1_dir = Pin(3, Pin.OUT)
+# m2_pwm = PWM(Pin(6))
+# m2_dir = Pin(2, Pin.OUT)
+# m3_pwm = PWM(Pin(21))
+# m3_dir = Pin(27, Pin.OUT)
+# m4_pwm = PWM(Pin(20))
+# m4_dir = Pin(26, Pin.OUT)
+
+
+
+# front_left_trig = Pin(19, Pin.OUT)
+# front_left_echo = Pin(18, Pin.IN)
+# 
+# front_right_trig = Pin(11, Pin.OUT)
+# front_right_echo = Pin(10, Pin.IN)
+# 
+# left_front_trig = Pin(13, Pin.OUT)
+# left_front_echo = Pin(12, Pin.IN)
+# 
+# left_back_trig = Pin(22, Pin.OUT)
+# left_back_echo = Pin(28, Pin.IN)
+# 
+# right_front_trig = Pin(17, Pin.OUT)
+# right_front_echo = Pin(16, Pin.IN)
 
 led_pin = Pin(25, Pin.OUT)
 led_pin.value(0)
@@ -114,22 +143,28 @@ while i<=3:
 led_pin.value(1)
 
 
-# while True:
-#     print("loop")
-#     
-#     left_front_us = measure_distance(left_front_trig, left_front_echo)  
-#     print("Left Front: ", left_front_us)
-# 
-#     left_back_us = measure_distance(left_back_trig, left_back_echo)  
-#     print("Left Back: ", left_back_us)
-#     front_right_us = measure_distance(front_right_trig, front_right_echo)
-#     print("Front Right: ", front_right_us)
-#     right_front_us = measure_distance(right_front_trig, right_front_echo)  
-#     print("Right Front: ", right_front_us)
-#     front_left_us = measure_distance(front_left_trig, front_left_echo) 
-#     print("Front Left: ", front_left_us)
-#     
-#     time.sleep(1)
+while True:
+    print("loop")
+    led_pin.value(1)
+    time.sleep_ms(500)
+    led_pin.value(0)
+    time.sleep_ms(500)
+    
+    front_right_us = measure_distance(front_right_trig, front_right_echo)
+    print("Front Right: ", front_right_us)
+    
+    left_front_us = measure_distance(left_front_trig, left_front_echo)  
+    print("Left Front: ", left_front_us)
+
+    left_back_us = measure_distance(left_back_trig, left_back_echo)  
+    print("Left Back: ", left_back_us)
+    
+    right_front_us = measure_distance(right_front_trig, right_front_echo)  
+    print("Right Front: ", right_front_us)
+    
+    front_left_us = measure_distance(front_left_trig, front_left_echo) 
+    print("Front Left: ", front_left_us)
+     
 
 
 while True:

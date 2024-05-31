@@ -38,6 +38,11 @@ led_pin.value(0)
 
 uart = UART(1, baudrate=115200, tx=Pin(4), rx=Pin(5))
 
+slow = 4500
+medium = 9000
+fast = 24000
+super_fast = 36000
+
 
 def map(val, loval, hival, tolow, tohigh):
     return (val - loval) / (hival - loval) * (tohigh - tolow) + tolow
@@ -126,6 +131,23 @@ while i<=3:
     time.sleep_ms(500)
 led_pin.value(1)
 
+# while True:
+#     front_left_us = measure_distance(front_left_trig, front_left_echo) 
+#     print("Front Left: ", front_left_us)
+# 
+#     left_front_us = measure_distance(left_front_trig, left_front_echo)  
+#     print("Left Front: ", left_front_us)
+# 
+#     left_back_us = measure_distance(left_back_trig, left_back_echo)  
+#     print("Left Back: ", left_back_us) 
+# 
+#     right_front_us = measure_distance(right_front_trig, right_front_echo)  
+#     print("Right Front: ", right_front_us)
+#     front_right_us = measure_distance(front_right_trig, front_right_echo)
+#     print("Front Right: ", front_right_us)
+# 
+#     time.sleep_ms(10)
+
 
 def Core0():
     global data
@@ -145,11 +167,15 @@ def Core0():
 def Core1():
     global data
     global drive_stat
+    global slow, medium, fast, super_fast
     drive_stat = 1
-    while False:
+    message = "{}".format(drive_stat)
+    print(message)
+    message_bytes = message.encode('utf-8')
+    uart.write(message_bytes)
+    while True:
         print("loop")
         
-
         front_left_us = measure_distance(front_left_trig, front_left_echo) 
         print("Front Left: ", front_left_us)
 
@@ -166,78 +192,83 @@ def Core1():
        
         
         if(front_left_us <=140 and front_right_us <= 140):
-            d = 9000 # 7000
+            d = medium # 7000
         else:
-            d = 24000 # 18000
+            d = fast # 18000
         if(right_front_us <128 and front_left_us <= 45 and front_right_us <= 45):
             print("Move Left 4")
-            drive(5500,0,-5500,0) # 4000
+            drive(slow,0,-slow,0) # 4000
         elif(front_left_us <= 45 and front_right_us <= 45):
             if(abs(front_left_us-front_right_us) >= 3):
                 if(front_left_us > front_right_us):
                     print("Clockwise 1")
-                    drive(-3500,3500,-3500,3500) # 2500
+                    drive(-slow,slow,-slow,slow) # 2500
                 else:
                     print("Anti Clockwise 1")
-                    drive(3500,-3500,3500,-3500) # 2500
+                    drive(slow,-slow,slow,-slow) # 2500
             elif(front_left_us <= 10 and front_right_us <= 10):
                 print("Digonal Back Right 1")
-                drive(4500,4500,4500,-4500) # 3000
+                drive(slow,slow,slow,-slow) # 3000
             elif(front_left_us <= 20 and front_right_us <= 20 and right_front_us > 160):
                 print("Move Right 1")
-                drive(-24000,0,24000,0) #18000
+                drive(-fast,0,fast,0) #18000
             else:
                 print("Diagonal Front Right 1")
-                drive(-3500,-3500,3500,3500) # 3000
+                drive(-slow,-slow,slow,slow) # 3000
         elif(left_front_us <= 45 and left_back_us <= 45):
             if(abs(left_front_us-left_back_us) >= 4):
                 if(left_back_us > left_front_us):
                     print("Clockwise 2")
-                    drive(-3500,3500,-3500,3500) # 2500
+                    drive(-slow,slow,-slow,slow) # 2500
                 else:
                     print("Anti Clockwise 2")
-                    drive(3500,-3500,3500,-3500)  # 2500
+                    drive(slow,-slow,slow,-slow)  # 2500
             elif(left_front_us <= 10 and left_back_us <= 10):
                 print("Diagonal Front Right 2")
-                drive(-6000,-6000,6000,6000) # 5000
+                drive(-slow,-slow,slow,slow) # 5000
             elif(left_front_us <= 27 and left_back_us <= 27):
                 print("Straight 2")
                 drive(0,-d,0,d)
             else:
                 print("Diagonal Front Left 2")
-                drive(6000,-6000,-6000,6000) #5000
+                drive(slow,-slow,-slow,slow) #5000
         elif(right_front_us >=118 and right_front_us <=128):
             print("Moving straight for 2.5 seconds 3")
-            drive(0,-36000,0,36000) # 30000
+            drive(0,-super_fast,0,super_fast) # 30000
             time.sleep_ms(1750)
             print("Anticlockwise for 1 seconds 3")
-            drive(12000,-12000,12000,-12000) #10000
+            drive(medium,-medium,medium,-medium) #10000
             time.sleep_ms(500)
             print("Stop 3")
             drive(0,0,0,0)
             drive_stat = 1
-            message = "{},{},{}".format(drive_stat)
+            message = "{}".format(drive_stat)
             print(message)
             message_bytes = message.encode('utf-8')
             uart.write(message_bytes)
             break
         elif(right_front_us <128):
             print("Move Left 4")
-            drive(5500,0,-5500,0) # 4000
+            drive(slow,0,-slow,0) # 4000
         elif(right_front_us <= 160):
             print("Moving right 5")
-            drive(-5500,0,5500,0) # 4000
+            drive(-slow,0,slow,0) # 4000
         elif(front_right_us > 45 and front_left_us < 45):
             print("Moving right 6")
-            drive(-5500,0,5500,0) # 4000
+            drive(-slow,0,slow,0) # 4000
         else:
             print("Stop - Confused 7")
-            drive(0,0,0,0)
+            drive(0,0,0,0) 
             drive_stat = 1
+            message = "{}".format(drive_stat)
+            print(message)
+            message_bytes = message.encode('utf-8')
+            uart.write(message_bytes)
             break
         time.sleep_ms(100)
-    while True:
+    while False:
         if uart.any():
+            print("received")
             message_bytes = uart.read()
             message = message_bytes.decode('utf-8')
             li = list(message.split(","))
