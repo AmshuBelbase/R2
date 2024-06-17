@@ -87,13 +87,7 @@ def drive(speed1, speed2, speed3, speed4):
         m4_pwm.duty_u16(speed4)
     else:
         m4_pwm.duty_u16(0)
-        
-# while True:
-#     time.sleep(3) 
-#     drive(4500,0,-4500,0) # 4000
-# #     drive(slow,0,-slow,0)
-# #     time.sleep(3)
-# #     drive(0,4500,0,-4500)
+         
 
 def measure_distance(trigger, echo):
     # Send a 10us pulse to trigger the sensor
@@ -178,15 +172,15 @@ def Core0():
 
 def Core1():
 #     global data
-#     global drive_stat
+    global drive_stat
     global slow, medium, fast, super_fast
     garbage_c = 0
     forward_c = 0
 #     drive_stat = 1
-#     message = "{}".format(drive_stat)
-#     print(message)
-#     message_bytes = message.encode('utf-8')
-#     uart.write(message_bytes) 
+    message = "{}".format(drive_stat)
+    print(message)
+    message_bytes = message.encode('utf-8')
+    uart.write(message_bytes) 
 
     while True:
         print("loop")
@@ -270,12 +264,8 @@ def Core1():
                 time.sleep_ms(500)
                 print("Stop 3")
                 drive(0,0,0,0)
-                break
-#             drive_stat = 1
-#             message = "{}".format(drive_stat)
-#             print(message)
-#             message_bytes = message.encode('utf-8')
-#             uart.write(message_bytes)
+                drive_stat = 8 #1
+                break 
             
         elif(right_front_us <128):
             print("Move Left 2")
@@ -292,14 +282,12 @@ def Core1():
             garbage_c += 1
             print("garbage_c:",garbage_c)
             if(garbage_c >= 2):
-                break 
-#             drive_stat = 1
-#             message = "{}".format(drive_stat)
-#             print(message)
-#             message_bytes = message.encode('utf-8')
-#             uart.write(message_bytes)
-            
-        time.sleep_ms(2)
+                break  
+        time.sleep_ms(2) 
+    message = "{}".format(drive_stat)
+    print(message)
+    message_bytes = message.encode('utf-8')
+    uart.write(message_bytes)
     while False:
         if uart.any():
             print("received")

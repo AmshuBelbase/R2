@@ -1,50 +1,73 @@
 from machine import Pin, UART, PWM
 from servo import Servo 
-from Stepper import StepperMotor
-# from Ultrasonic import UltrasonicSensor
+from Stepper import StepperMotor 
 import time
 import utime
 
-
-uart = UART(1, baudrate=115200, tx=Pin(8), rx=Pin(9))  
+uart = UART(1, baudrate=115200, tx=Pin(4), rx=Pin(5))  
 
 # roller servo
-roller_servo1_pin = 17 #19
-roller_servo2_pin = 16 #18
-roller_servo1 = Servo(roller_servo1_pin)
-roller_servo2 = Servo(roller_servo2_pin) 
+roller_servo_r_pin = 11
+roller_servo_l_pin = 10
+roller_servo1 = Servo(roller_servo_r_pin)
+roller_servo2 = Servo(roller_servo_l_pin)
 
-# front ball ultrasonics 
-front_ball_left_trig = Pin(5, Pin.OUT)
-front_ball_left_echo = Pin(4, Pin.IN)
+# gate servo
+gate_servo_r_pin = 7
+gate_servo_l_pin = 6
+gate_servo1 = Servo(gate_servo_r_pin)
+gate_servo2 = Servo(gate_servo_l_pin)
 
-front_ball_right_trig = Pin(2, Pin.OUT)
-front_ball_right_echo = Pin(3, Pin.IN)
+# push servo
+push_servo_r_pin = 3
+push_servo_l_pin = 2
+push_servo1 = Servo(push_servo_r_pin)
+push_servo2 = Servo(push_servo_l_pin)
+ 
 
 # roller dc motor
-roller_pin1 = Pin(27, Pin.OUT)
-roller_pin2 = Pin(28, Pin.OUT)
+roller_pin1 = Pin(15, Pin.OUT)
+roller_pin2 = Pin(14, Pin.OUT)
+
+# front ball ultrasonics 
+# front_ball_left_trig = Pin(5, Pin.OUT)
+# front_ball_left_echo = Pin(4, Pin.IN)
+# 
+# front_ball_right_trig = Pin(2, Pin.OUT)
+# front_ball_right_echo = Pin(3, Pin.IN)
 
 drive_stat = 0 
 
 steps = 0
-x_deg = 750    # 150
+
+gate_servo1.goto(100) 
+gate_servo2.goto(900)
+ 
+
+push_servo1.goto(0) 
+push_servo2.goto(1000)
+
+
+x_deg = 20    # 150
 y_deg = 1024 - x_deg
 roller_servo1.goto(x_deg) 
 roller_servo2.goto(y_deg) 
-x_deg = roller_servo1.get_position() 
 
-while x_deg != 750:
-    if(x_deg > 750):
-        x_deg = x_deg -1
-    else:
-        x_deg = x_deg +1 
-    y_deg = 1024 - x_deg
-    roller_servo1.goto(x_deg) 
-    roller_servo2.goto(y_deg)
-    time.sleep_us(1000)
+x_deg = roller_servo1.get_position()  
 
+# while x_deg != 0:
+#     if(x_deg > 0):
+#         x_deg = x_deg -1
+#     else:
+#         x_deg = x_deg +1 
+#     y_deg = 1024 - x_deg
+#     roller_servo1.goto(x_deg) 
+#     roller_servo2.goto(y_deg)
+#     time.sleep_us(1000)
+ 
+   
 
+    
 def measure_distance(trigger, echo):
     # Send a 10us pulse to trigger the sensor
     trigger.off()
@@ -66,8 +89,6 @@ def measure_distance(trigger, echo):
     # Calculate the duration of the echo pulse
     duration = time.ticks_diff(end_time, start_time)
 
-    # Convert the duration to distance (in cm)
-    # Speed of sound = 343 m/s = 34300 cm/s
     # Distance = (duration * speed of sound) / 2
     distance = duration * 34300 / (2 * 1000000)  # Convert microseconds to seconds
 
@@ -77,7 +98,9 @@ def measure_distance(trigger, echo):
 
 time.sleep(1)
 print("Started")
-while True:
+roller_pin1.value(0)
+roller_pin2.value(0)
+while False:
     if uart.any():
         print("received")
         message_bytes = uart.read()
@@ -87,6 +110,25 @@ while True:
             drive_stat = int(li[0])
         else:
             continue
+    if(drive_stat == 8):
+        print("Search Code Received")
+        x_deg = roller_servo1.get_position() 
+        while x_deg != 150:
+            if(x_deg > 150):
+                x_deg = x_deg -1
+            else:
+                x_deg = x_deg +1 
+            y_deg = 1024 - x_deg
+            roller_servo1.goto(x_deg) 
+            roller_servo2.goto(y_deg)
+        print("Started Roller")
+        roller_pin1.value(1)
+        roller_pin2.value(0)
+        time.sleep(3)
+        print("Reverse Roller")
+        roller_pin1.value(0)
+        roller_pin2.value(1)
+        time.sleep(3)
     if(drive_stat == 1):
         print("loop")
         x_deg = roller_servo1.get_position() 
