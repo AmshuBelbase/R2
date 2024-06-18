@@ -1,12 +1,10 @@
-
-# Pico
+# R2 Pico - DRIVE
 from machine import Pin, PWM, UART 
 import sys
 import time
 import _thread 
-  
-data = []
-drive_stat = 0 # donot listen to laptop
+
+# ----------------- PINOUTS -----------------
 
 m1_pwm = PWM(Pin(4))
 m1_dir = Pin(14, Pin.OUT)
@@ -37,10 +35,17 @@ led_pin.value(0)
 
 uart = UART(1, baudrate=115200, tx=Pin(8), rx=Pin(9))
 
+# ----------------- GLOBAL AVRIABLES -----------------
+
+data = []
+drive_stat = 0 # donot listen to laptop
+
 slow = 5000
 medium = 9000
 fast = 24000
 super_fast = 36000
+d = 18000
+
 
 
 def map(val, loval, hival, tolow, tohigh):
@@ -117,21 +122,21 @@ def measure_distance(trigger, echo):
 
     return distance
 
+# ----------------- INITIAL POSITIONS -----------------
+
 print("Started")
 drive(0,0,0,0)
-d = 18000
+
 i = 1
+time_s = 3
 led_pin.value(0)
-while i<=15:
+while i<=time_s:
     i=i+1
     led_pin.value(1)
     time.sleep_ms(500)
     led_pin.value(0)
     time.sleep_ms(500)
-led_pin.value(1)
-
-# drive(7000,7000,7000,7000)
-
+led_pin.value(1) 
 
 while False:
     left_back_us = measure_distance(left_back_trig, left_back_echo)  
@@ -142,13 +147,11 @@ while False:
     print("Front Left: ", front_left_us)
 
     left_front_us = measure_distance(left_front_trig, left_front_echo)  
-    print("Left Front: ", left_front_us)
-
-    left_back_us = measure_distance(left_back_trig, left_back_echo)  
-    print("Left Back: ", left_back_us) 
+    print("Left Front: ", left_front_us) 
 
     right_front_us = measure_distance(right_front_trig, right_front_echo)  
     print("Right Front: ", right_front_us)
+    
     front_right_us = measure_distance(front_right_trig, front_right_echo)
     print("Front Right: ", front_right_us)
 
@@ -156,33 +159,32 @@ while False:
 
 
 def Core0():
+    gv = 0
     global data
     while True:
         buf = sys.stdin.readline().rstrip('\n')
+        print("Buffer: ",buf)
         try:
-            data = [int(i) for i in buf.split('|')]
-            if (data[0] % 1000 == 0):
-                led.on()
-            else:
-                led.off()
+            data = [int(i) for i in buf.split('|')] 
         except ValueError:
             print("Non-integer detected.")
             continue
+        # Add a condition to exit the loop if needed
+        if 'exit' in buf:
+            break
+        gv += 1
+        if gv % 2000 == 0:
+            gv = 0
 
 
 def Core1():
-#     global data
+    global data
     global drive_stat
     global slow, medium, fast, super_fast
     garbage_c = 0
-    forward_c = 0
-#     drive_stat = 1
-    message = "{}".format(drive_stat)
-    print(message)
-    message_bytes = message.encode('utf-8')
-    uart.write(message_bytes) 
+    forward_c = 0 
 
-    while True:
+    while False:
         print("loop")
         
         front_left_us = measure_distance(front_left_trig, front_left_echo) 
@@ -264,9 +266,8 @@ def Core1():
                 time.sleep_ms(500)
                 print("Stop 3")
                 drive(0,0,0,0)
-                drive_stat = 8 #1
+                drive_stat = 1 #1
                 break 
-            
         elif(right_front_us <128):
             print("Move Left 2")
             drive(-slow,0,slow,0) # 4000
@@ -283,12 +284,15 @@ def Core1():
             print("garbage_c:",garbage_c)
             if(garbage_c >= 2):
                 break  
-        time.sleep_ms(2) 
+        time.sleep_ms(2)
+        
+    drive_stat = 1
     message = "{}".format(drive_stat)
     print(message)
     message_bytes = message.encode('utf-8')
     uart.write(message_bytes)
-    while False:
+    
+    while True:
         if uart.any():
             print("received")
             message_bytes = uart.read()
@@ -304,17 +308,16 @@ def Core1():
             wm2 = int(map(data[1], -255, 255, -50000, 50000))
             wm3 = int(map(data[2], -255, 255, -50000, 50000))
             wm4 = int(map(data[3], -255, 255, -50000, 50000))
-#             print("After Mapping")
-#             print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
+            print("After Mapping")
+            print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
             drive(wm1*-1, wm2*1, wm3*-1, wm4*1) 
-            time.sleep_ms(30)
+#             time.sleep_ms(30)
             data = [] 
-        if(drive_stat == 0):
-#             print("Drive Stop")
+        if(drive_stat == 0): 
             drive(0,0,0,0)
         if(drive_stat == 2):
             print("Adjust according to Mech pico.")
 
-# _thread.start_new_thread(Core1, ())
+_thread.start_new_thread(Core1, ())
 
-Core1()
+Core0()

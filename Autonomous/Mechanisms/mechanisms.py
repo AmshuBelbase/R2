@@ -29,6 +29,11 @@ push_servo2 = Servo(push_servo_l_pin)
 roller_pin1 = Pin(15, Pin.OUT)
 roller_pin2 = Pin(14, Pin.OUT)
 
+# elevator steppers
+elevator_step1_pin = 16
+elevator_dir1_pin = 17
+stepper_motor = StepperMotor(elevator_step1_pin, elevator_dir1_pin)
+
 # front ball ultrasonics 
 # front_ball_left_trig = Pin(5, Pin.OUT)
 # front_ball_left_echo = Pin(4, Pin.IN)
@@ -37,15 +42,13 @@ roller_pin2 = Pin(14, Pin.OUT)
 # front_ball_right_echo = Pin(3, Pin.IN)
 
 drive_stat = 0 
-
 steps = 0
 
-gate_servo1.goto(100) 
-gate_servo2.goto(900)
- 
+gate_servo1.goto(700) 
+gate_servo2.goto(300)
 
-push_servo1.goto(0) 
-push_servo2.goto(1000)
+push_servo1.goto(1000) 
+push_servo2.goto(0)
 
 
 x_deg = 20    # 150
@@ -53,20 +56,51 @@ y_deg = 1024 - x_deg
 roller_servo1.goto(x_deg) 
 roller_servo2.goto(y_deg) 
 
+roller_pin1.value(1)
+roller_pin2.value(0)
+
 x_deg = roller_servo1.get_position()  
 
-# while x_deg != 0:
-#     if(x_deg > 0):
-#         x_deg = x_deg -1
-#     else:
-#         x_deg = x_deg +1 
-#     y_deg = 1024 - x_deg
-#     roller_servo1.goto(x_deg) 
-#     roller_servo2.goto(y_deg)
-#     time.sleep_us(1000)
+roller = 1000
+roller = 50
+while x_deg != roller:
+    if(x_deg > roller):
+        x_deg = x_deg -1
+    else:
+        x_deg = x_deg +1 
+    y_deg = 1024 - x_deg
+    roller_servo1.goto(x_deg) 
+    roller_servo2.goto(y_deg)
+    time.sleep_us(1000)
  
-   
 
+#throw ball sequence
+roller_pin1.value(1)
+roller_pin2.value(0)
+gate_servo1.goto(110) 
+gate_servo2.goto(890)
+roller = 1000
+while x_deg != roller:
+    if(x_deg > roller):
+        x_deg = x_deg -1
+    else:
+        x_deg = x_deg +1 
+    y_deg = 1024 - x_deg
+    roller_servo1.goto(x_deg) 
+    roller_servo2.goto(y_deg)
+    time.sleep_us(1000)
+time.sleep(1)
+# gate_servo1.goto(500) 
+# gate_servo2.goto(500)
+roller_pin1.value(0)
+roller_pin2.value(0)
+stepper_motor.stepper_up(2050)
+push_servo1.goto(0) 
+push_servo2.goto(1000)
+time.sleep(2)
+stepper_motor.stepper_down(2050)
+push_servo1.goto(1000) 
+push_servo2.goto(0)
     
 def measure_distance(trigger, echo):
     # Send a 10us pulse to trigger the sensor
@@ -95,11 +129,6 @@ def measure_distance(trigger, echo):
     return distance
 
 
-
-time.sleep(1)
-print("Started")
-roller_pin1.value(0)
-roller_pin2.value(0)
 while False:
     if uart.any():
         print("received")
