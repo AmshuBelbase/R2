@@ -114,7 +114,7 @@ print("Warming Up")
 drive(0,0,0,0)
 
 i = 1
-time_s = 15
+time_s = 3
 led_pin.value(0)
 while i<=time_s:
     i=i+1
@@ -287,14 +287,16 @@ while False:
 message = "{}".format(drive_stat)
 print(message)
 message_bytes = message.encode('utf-8')
-uart.write(message_bytes) 
-time.sleep_ms(100)
-while True:
-    message = "{}".format(drive_stat)
-    print(message)
-    message_bytes = message.encode('utf-8')
-    uart.write(message_bytes) 
-    time.sleep_ms(100)
+uart.write(message_bytes)
+
+ranges = [
+    (-1000, 1000, 1),
+    (-2000, 2000, 1), 
+    (-5000, 5000, 1),
+    (-10000, 10000, 1)
+]
+
+while True:  
     buffer = ''  
     select_result = uselect.select([stdin], [], [], 0)
     while select_result[0]:
@@ -323,16 +325,52 @@ while True:
           
     if data and drive_stat == 1:
         print("Received data: 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3]))
+        if -40 <= data[0] <= -15 and data[1] >= -60: 
+            data[0] = -16
+            data[1] = 16
+            data[2] = -16
+            data[3] = 16
+        if -5 <= data[0] <= 25 and data[1] >= -60: 
+            data[0] = 16
+            data[1] = -16
+            data[2] = 16
+            data[3] = -16
+        if -15 <= data[0] <= -5 and data[1] >= -40: # -15 -5
+            data[0] = 0
+            data[1] = 0
+            data[2] = 0
+            data[3] = 0
+            drive_stat = 3
+            message = "{}".format(drive_stat)
+            print(message)
+            message_bytes = message.encode('utf-8')
+            uart.write(message_bytes)
+            print("Drive stat 0")
+            
         wm1 = int(map(data[0], -255, 255, -62000, 62000))
         wm2 = int(map(data[1], -255, 255, -62000, 62000))
         wm3 = int(map(data[2], -255, 255, -62000, 62000))
         wm4 = int(map(data[3], -255, 255, -62000, 62000))
+        
+        mul_fac = 0.5
+        print("Before Mapping")
+        print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
+
+        for min_val, max_val, factor in ranges:
+            if all(min_val <= var <= max_val for var in (wm1, wm2, wm3, wm4)):
+                mul_fac = factor
+                break
+
+        wm1 = int(mul_fac * wm1)
+        wm2 = int(mul_fac * wm2)
+        wm3 = int(mul_fac * wm3)
+        wm4 = int(mul_fac * wm4)
+        
         print("After Mapping")
         print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
         print("")
         drive(wm1*1, wm2*1, wm3*1, wm4*1) 
-        data.clear()
-    time.sleep_ms(1)  
+        data.clear() 
     if(drive_stat == 0): 
         drive(0,0,0,0)
     if(drive_stat == 2):

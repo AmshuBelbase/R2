@@ -53,11 +53,11 @@ right_echo = Pin(19, Pin.IN)
 
 # ----------------- INITIAL POSITIONS -----------------
 
-gate_servo1.goto(100) 
-gate_servo2.goto(900)
+gate_servo1.goto(700) 
+gate_servo2.goto(300)
 
-push_servo1.goto(0) 
-push_servo2.goto(1000)
+push_servo1.goto(700) 
+push_servo2.goto(300)
 
 roller_pin1.value(1)
 roller_pin2.value(0)
@@ -123,7 +123,21 @@ while True:
         roller_pin1.value(1)
         roller_pin2.value(0)
         x_deg = roller_servo1.get_position() 
-        roller = 100
+        roller = 500
+        while x_deg != roller:
+            if(x_deg > roller):
+                x_deg = x_deg -1
+            else:
+                x_deg = x_deg +1 
+            y_deg = 1024 - x_deg
+            roller_servo1.goto(x_deg) 
+            roller_servo2.goto(y_deg)
+            time.sleep_us(1000)
+    if(drive_stat == 3):
+        gate_servo1.goto(100) 
+        gate_servo2.goto(900)
+        x_deg = roller_servo1.get_position() 
+        roller = 500
         while x_deg != roller:
             if(x_deg > roller):
                 x_deg = x_deg -1
@@ -134,9 +148,9 @@ while True:
             roller_servo2.goto(y_deg)
             time.sleep_us(1000)
             
-        right_us = measure_distance(right_trig, right_echo) 
-        print("Right: ", right_us) 
-        
-        left_us = measure_distance(left_trig, left_echo) 
-        print("Left: ", left_us)
+#         right_us = measure_distance(right_trig, right_echo) 
+#         print("Right: ", right_us) 
+#         
+#         left_us = measure_distance(left_trig, left_echo) 
+#         print("Left: ", left_us)
 
