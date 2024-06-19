@@ -43,10 +43,7 @@ while True:
     print("loop")
     
     right_us = measure_distance(right_trig, right_echo) 
-    print("Right: ", right_us)
-    
-    elevator_us = measure_distance(elevator_trig, elevator_echo)  
-    print("Elevator: ", elevator_us)
+    print("Right: ", right_us) 
     
     left_us = measure_distance(left_trig, left_echo) 
     print("Left: ", left_us)

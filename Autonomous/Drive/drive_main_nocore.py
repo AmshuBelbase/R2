@@ -152,7 +152,7 @@ while False:
 
 data = []  
 
-drive_stat = 1 # donot listen to laptop
+drive_stat = 1
 
 slow = 4500
 medium = 9000
@@ -288,9 +288,13 @@ message = "{}".format(drive_stat)
 print(message)
 message_bytes = message.encode('utf-8')
 uart.write(message_bytes) 
-
+time.sleep_ms(100)
 while True:
-    
+    message = "{}".format(drive_stat)
+    print(message)
+    message_bytes = message.encode('utf-8')
+    uart.write(message_bytes) 
+    time.sleep_ms(100)
     buffer = ''  
     select_result = uselect.select([stdin], [], [], 0)
     while select_result[0]:

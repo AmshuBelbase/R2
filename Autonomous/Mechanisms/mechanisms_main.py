@@ -43,8 +43,8 @@ left_echo = Pin(21, Pin.IN)
 right_trig = Pin(18, Pin.OUT) 
 right_echo = Pin(19, Pin.IN)
 
-roller_trig = Pin(27, Pin.OUT)
-roller_echo = Pin(28, Pin.IN)
+# roller_trig = Pin(27, Pin.OUT)
+# roller_echo = Pin(28, Pin.IN)
 
 # elevator_trig = Pin(27, Pin.OUT)
 # elevator_echo = Pin(28, Pin.IN)
@@ -62,7 +62,7 @@ push_servo2.goto(1000)
 roller_pin1.value(1)
 roller_pin2.value(0)
 
-x_deg = 600    # 150
+x_deg = 700    # 150
 y_deg = 1024 - x_deg
 roller_servo1.goto(x_deg) 
 roller_servo2.goto(y_deg)
@@ -75,6 +75,36 @@ roller_pin2.value(0)
 # ----------------- GLOBAL AVRIABLES -----------------
 
 drive_stat = 0
+
+
+# ----------------- USER DEFINED FUNCTIONS -----------------
+
+def measure_distance(trigger, echo):
+    # Send a 10us pulse to trigger the sensor
+    trigger.off()
+    time.sleep_us(2)
+    trigger.on()
+    time.sleep_us(10)
+    trigger.off()
+
+    # Wait for the echo to start
+    while echo.value() == 0:
+        pass
+    start_time = time.ticks_us()
+
+    # Wait for the echo to end
+    while echo.value() == 1:
+        pass
+    end_time = time.ticks_us()
+
+    # Calculate the duration of the echo pulse
+    duration = time.ticks_diff(end_time, start_time)
+
+    # Distance = (duration * speed of sound) / 2
+    distance = duration * 34300 / (2 * 1000000)  # Convert microseconds to seconds
+
+    return distance
+
 
 # ----------------- MAIN CODE -----------------
 
@@ -93,7 +123,7 @@ while True:
         roller_pin1.value(1)
         roller_pin2.value(0)
         x_deg = roller_servo1.get_position() 
-        roller = 150
+        roller = 100
         while x_deg != roller:
             if(x_deg > roller):
                 x_deg = x_deg -1
@@ -102,4 +132,11 @@ while True:
             y_deg = 1024 - x_deg
             roller_servo1.goto(x_deg) 
             roller_servo2.goto(y_deg)
-            time.sleep_us(1000) 
+            time.sleep_us(1000)
+            
+        right_us = measure_distance(right_trig, right_echo) 
+        print("Right: ", right_us) 
+        
+        left_us = measure_distance(left_trig, left_echo) 
+        print("Left: ", left_us)
+
