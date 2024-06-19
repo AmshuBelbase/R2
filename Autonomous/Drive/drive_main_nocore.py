@@ -152,7 +152,7 @@ while False:
 
 data = []  
 
-drive_stat = 0 # donot listen to laptop
+drive_stat = 1 # donot listen to laptop
 
 slow = 4500
 medium = 9000
@@ -172,7 +172,7 @@ message_bytes = message.encode('utf-8')
 uart.write(message_bytes)
 time.sleep_ms(5)
 
-while True:
+while False:
     buffer = ''  
     select_result = uselect.select([stdin], [], [], 0)
     while select_result[0]:
@@ -319,10 +319,10 @@ while True:
           
     if data and drive_stat == 1:
         print("Received data: 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3]))
-        wm1 = int(map(data[0], -255, 255, -50000, 50000))
-        wm2 = int(map(data[1], -255, 255, -50000, 50000))
-        wm3 = int(map(data[2], -255, 255, -50000, 50000))
-        wm4 = int(map(data[3], -255, 255, -50000, 50000))
+        wm1 = int(map(data[0], -255, 255, -62000, 62000))
+        wm2 = int(map(data[1], -255, 255, -62000, 62000))
+        wm3 = int(map(data[2], -255, 255, -62000, 62000))
+        wm4 = int(map(data[3], -255, 255, -62000, 62000))
         print("After Mapping")
         print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
         print("")
