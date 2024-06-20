@@ -67,7 +67,7 @@ y_deg = 1024 - x_deg
 roller_servo1.goto(x_deg) 
 roller_servo2.goto(y_deg)
 
-time.sleep(1)
+time.sleep(2)
 
 roller_pin1.value(0)
 roller_pin2.value(0)
@@ -187,6 +187,8 @@ while True:
             print(message)
             message_bytes = message.encode('utf-8')
             uart.write(message_bytes)
+        
+        drive_stat = 5
         
         
         

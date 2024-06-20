@@ -330,16 +330,16 @@ while True:
     
     if data and drive_stat == 1:
         print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4]))
-        if -40 <= data[0] <= -15 and data[1] >= -60: 
-            data[0] = -16
-            data[1] = 16
-            data[2] = -16
-            data[3] = 16
+        if -40 <= data[0] <= -15 and data[1] >= -70: 
+            data[0] = -17
+            data[1] = 17
+            data[2] = -17
+            data[3] = 17
         if -5 <= data[0] <= 25 and data[1] >= -60: 
-            data[0] = 16
-            data[1] = -16
-            data[2] = 16
-            data[3] = -16
+            data[0] = 17
+            data[1] = -17
+            data[2] = 17
+            data[3] = -17
         if -15 <= data[0] <= -5 and data[1] >= -40: # -15 -5
             data[0] = 0
             data[1] = 0
@@ -387,13 +387,14 @@ while True:
         drive(0,0,0,0)
         time.sleep(1)
         drive(0, 6000,0, -6000)
-        time.sleep(0.25)
+        time.sleep(0.5)
         
         message = "{}".format(drive_stat) 
         print(message)
         message_bytes = message.encode('utf-8')
         uart.write(message_bytes)
-        time.sleep(0.25)
+        drive(0,0,0,0)
+        time.sleep(0.5)
         
         # go front and feed the ball
         
