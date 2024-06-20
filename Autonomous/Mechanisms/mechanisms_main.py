@@ -37,17 +37,18 @@ elevator_dir1_pin = 17
 stepper_motor = StepperMotor(elevator_step1_pin, elevator_dir1_pin)
 
 #ultrasonics
-left_trig = Pin(20, Pin.OUT)   
-left_echo = Pin(21, Pin.IN)
 
-right_trig = Pin(18, Pin.OUT) 
-right_echo = Pin(19, Pin.IN)
+# left_trig = Pin(20, Pin.OUT)   
+# left_echo = Pin(21, Pin.IN)
+# 
+# right_trig = Pin(18, Pin.OUT) 
+# right_echo = Pin(19, Pin.IN)
 
 # roller_trig = Pin(27, Pin.OUT)
 # roller_echo = Pin(28, Pin.IN)
 
-# elevator_trig = Pin(27, Pin.OUT)
-# elevator_echo = Pin(28, Pin.IN)
+elevator_trig = Pin(27, Pin.OUT)
+elevator_echo = Pin(28, Pin.IN)
 
 
 
@@ -66,6 +67,20 @@ x_deg = 700    # 150
 y_deg = 1024 - x_deg
 roller_servo1.goto(x_deg) 
 roller_servo2.goto(y_deg)
+
+# x_deg = 500    # 150
+# y_deg = 1024 - x_deg
+# roller_servo1.goto(x_deg) 
+# roller_servo2.goto(y_deg)
+# 
+# time.sleep(4)
+# 
+# x_deg = 1000    # 150
+# y_deg = 1024 - x_deg
+# roller_servo1.goto(x_deg) 
+# roller_servo2.goto(y_deg)
+# 
+# time.sleep(4)
 
 time.sleep(2)
 
@@ -137,7 +152,7 @@ while True:
         roller_pin1.value(1)
         roller_pin2.value(0)
         x_deg = roller_servo1.get_position() 
-        roller = 50
+        roller = 180
         while x_deg != roller:
             if(x_deg > roller):
                 x_deg = x_deg -1
@@ -160,8 +175,46 @@ while True:
         roller_pin1.value(1)
         roller_pin2.value(0)
         
+        time.sleep(2)
+        
+#         x_deg = roller_servo1.get_position()
+#         roller = 1000
+#         while x_deg != roller:
+#             if(x_deg > roller):
+#                 x_deg = x_deg -1
+#             else:
+#                 x_deg = x_deg +1 
+#             y_deg = 1024 - x_deg
+#             roller_servo1.goto(x_deg) 
+#             roller_servo2.goto(y_deg)
+#             time.sleep_us(1000)
+            
+        x_deg = 500    # 150
+        y_deg = 1024 - x_deg
+        roller_servo1.goto(x_deg) 
+        roller_servo2.goto(y_deg)
+
+        time.sleep(4)
+
+        x_deg = 1000    # 150
+        y_deg = 1024 - x_deg
+        roller_servo1.goto(x_deg) 
+        roller_servo2.goto(y_deg)
+
+        time.sleep(4)
+        
+        # go back for easier feed
+
+#         message = "{}".format(5)
+#         print(message)
+#         message_bytes = message.encode('utf-8')
+#         uart.write(message_bytes)
+        
+        
+        time.sleep(5)
+        
         x_deg = roller_servo1.get_position() 
-        roller = 1000
+        roller = 700
         while x_deg != roller:
             if(x_deg > roller):
                 x_deg = x_deg -1
@@ -174,13 +227,6 @@ while True:
          
         time.sleep(0.5)
         
-        # go back for easier feed
-
-        message = "{}".format(5)
-        print(message)
-        message_bytes = message.encode('utf-8')
-        uart.write(message_bytes)
-        
         if drive_stat == 4: # if purple ball then again start searching
             time.sleep(0.5)
             message = "{}".format(1)
@@ -188,7 +234,10 @@ while True:
             message_bytes = message.encode('utf-8')
             uart.write(message_bytes)
         
-        drive_stat = 5
+#         drive_stat = 5
+        
+#         roller_pin1.value(0)
+#         roller_pin2.value(0)
         
         
         

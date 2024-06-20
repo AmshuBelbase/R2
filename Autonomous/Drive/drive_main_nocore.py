@@ -290,10 +290,13 @@ message_bytes = message.encode('utf-8')
 uart.write(message_bytes)
 
 ranges = [
-    (-1000, 1000, 1),
-    (-2000, 2000, 1), 
-    (-5000, 5000, 1),
-    (-10000, 10000, 1)
+    (0, 1000, 5),
+    (1000, 2000, 3), 
+    (2000, 4000, 2),
+    (4000, 5000, 1.5),
+    (5000, 10000, 1),
+    (10000, 20000, 0.5),
+    (20000, 62000, 0.5)
 ]
 
 while True:
@@ -330,17 +333,8 @@ while True:
     
     if data and drive_stat == 1:
         print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4]))
-        if -40 <= data[0] <= -15 and data[1] >= -70: 
-            data[0] = -17
-            data[1] = 17
-            data[2] = -17
-            data[3] = 17
-        if -5 <= data[0] <= 25 and data[1] >= -60: 
-            data[0] = 17
-            data[1] = -17
-            data[2] = 17
-            data[3] = -17
-        if -15 <= data[0] <= -5 and data[1] >= -40: # -15 -5
+        
+        if -13 <= data[0] <= -7 and data[1] >= -43: # -15 -5
             data[0] = 0
             data[1] = 0
             data[2] = 0
@@ -348,18 +342,28 @@ while True:
             drive_stat = 2 # ball is in the range
             det_c = data[4] # class of detected object
             print("Drive stat 2")
+        elif data[0] < -13 and data[1] >= -70:  # ANTICLOCK
+            data[0] = -5 # 17
+            data[1] = 5
+            data[2] = -5
+            data[3] = 5
+        elif -7 < data[0] and data[1] >= -70:  # CLOCK
+            data[0] = 5
+            data[1] = -5
+            data[2] = 5
+            data[3] = -5
             
         wm1 = int(map(data[0], -255, 255, -62000, 62000))
         wm2 = int(map(data[1], -255, 255, -62000, 62000))
         wm3 = int(map(data[2], -255, 255, -62000, 62000))
         wm4 = int(map(data[3], -255, 255, -62000, 62000))
         
-        mul_fac = 0.5
+        mul_fac = 1
         print("Before Mapping")
         print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
 
         for min_val, max_val, factor in ranges:
-            if all(min_val <= var <= max_val for var in (wm1, wm2, wm3, wm4)):
+            if all(min_val <= abs(var) <= max_val for var in (wm1, wm2, wm3, wm4)):
                 mul_fac = factor
                 break
 
@@ -376,7 +380,10 @@ while True:
     
     if(drive_stat == 5):  # go back for easier feed
         drive(0, 9000,0, -9000)
-        time.sleep(0.25)
+        time.sleep(1)
+        drive(0,0,0,0)
+        drive(0, -9000,0, 9000)
+        time.sleep(1)
         drive(0,0,0,0)
         drive_stat = 0
         
@@ -386,20 +393,20 @@ while True:
         
         drive(0,0,0,0)
         time.sleep(1)
-        drive(0, 6000,0, -6000)
-        time.sleep(0.5)
+        drive(0, 8000,0, -8000)
+        time.sleep(0.75)
         
         message = "{}".format(drive_stat) 
         print(message)
         message_bytes = message.encode('utf-8')
         uart.write(message_bytes)
         drive(0,0,0,0)
-        time.sleep(0.5)
+        time.sleep(0.75)
         
         # go front and feed the ball
         
-        drive(0, -6000,0, 6000)
-        time.sleep(1.5)
+        drive(0, -8000,0, 8000)
+        time.sleep(1.1)
         drive(0,0,0,0)
         
         drive_stat = 3
