@@ -296,7 +296,8 @@ ranges = [
     (-10000, 10000, 1)
 ]
 
-while True:  
+while True:
+    det_c = -1
     buffer = ''  
     select_result = uselect.select([stdin], [], [], 0)
     while select_result[0]:
@@ -322,9 +323,13 @@ while True:
             drive_stat = int(li[0])
         else:
             continue
-          
+        print(drive_stat)
+    
+    if(drive_stat == 0): 
+        drive(0,0,0,0)
+    
     if data and drive_stat == 1:
-        print("Received data: 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3]))
+        print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4]))
         if -40 <= data[0] <= -15 and data[1] >= -60: 
             data[0] = -16
             data[1] = 16
@@ -340,12 +345,9 @@ while True:
             data[1] = 0
             data[2] = 0
             data[3] = 0
-            drive_stat = 3
-            message = "{}".format(drive_stat)
-            print(message)
-            message_bytes = message.encode('utf-8')
-            uart.write(message_bytes)
-            print("Drive stat 0")
+            drive_stat = 2 # ball is in the range
+            det_c = data[4] # class of detected object
+            print("Drive stat 2")
             
         wm1 = int(map(data[0], -255, 255, -62000, 62000))
         wm2 = int(map(data[1], -255, 255, -62000, 62000))
@@ -370,8 +372,42 @@ while True:
         print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
         print("")
         drive(wm1*1, wm2*1, wm3*1, wm4*1) 
-        data.clear() 
-    if(drive_stat == 0): 
+        data.clear()
+    
+    if(drive_stat == 5):  # go back for easier feed
+        drive(0, 9000,0, -9000)
+        time.sleep(0.25)
         drive(0,0,0,0)
-    if(drive_stat == 2):
-        print("Adjust according to Mech pico.")  
+        drive_stat = 0
+        
+    if(drive_stat == 2): # ball is in the range
+        
+        # go back and open the roller
+        
+        drive(0,0,0,0)
+        time.sleep(1)
+        drive(0, 6000,0, -6000)
+        time.sleep(0.25)
+        
+        message = "{}".format(drive_stat) 
+        print(message)
+        message_bytes = message.encode('utf-8')
+        uart.write(message_bytes)
+        time.sleep(0.25)
+        
+        # go front and feed the ball
+        
+        drive(0, -6000,0, 6000)
+        time.sleep(1.5)
+        drive(0,0,0,0)
+        
+        drive_stat = 3
+        if det_c == 2:
+            drive_stat = 4 # if purple ball then discard
+            
+        message = "{}".format(drive_stat)
+        print(message)
+        message_bytes = message.encode('utf-8')
+        uart.write(message_bytes)
+        
+        drive_stat = 0

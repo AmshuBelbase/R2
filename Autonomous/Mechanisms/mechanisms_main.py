@@ -120,10 +120,24 @@ while True:
             continue
         print(drive_stat)
     if(drive_stat == 1):
+        x_deg = roller_servo1.get_position() 
+        roller = 500
+        while x_deg != roller:
+            if(x_deg > roller):
+                x_deg = x_deg -1
+            else:
+                x_deg = x_deg +1 
+            y_deg = 1024 - x_deg
+            roller_servo1.goto(x_deg) 
+            roller_servo2.goto(y_deg)
+            time.sleep_us(1000)
+    if(drive_stat == 2):
+        gate_servo1.goto(100) 
+        gate_servo2.goto(900)
         roller_pin1.value(1)
         roller_pin2.value(0)
         x_deg = roller_servo1.get_position() 
-        roller = 500
+        roller = 50
         while x_deg != roller:
             if(x_deg > roller):
                 x_deg = x_deg -1
@@ -133,11 +147,21 @@ while True:
             roller_servo1.goto(x_deg) 
             roller_servo2.goto(y_deg)
             time.sleep_us(1000)
-    if(drive_stat == 3):
-        gate_servo1.goto(100) 
-        gate_servo2.goto(900)
+            
+    if(drive_stat == 3 or drive_stat == 4):
+        
+        if drive_stat == 3: # if red or blue ball then feed
+            gate_servo1.goto(100) 
+            gate_servo2.goto(900)
+        elif drive_stat == 4: # if purple ball then discard
+            gate_servo1.goto(700) 
+            gate_servo2.goto(300)
+            
+        roller_pin1.value(1)
+        roller_pin2.value(0)
+        
         x_deg = roller_servo1.get_position() 
-        roller = 500
+        roller = 1000
         while x_deg != roller:
             if(x_deg > roller):
                 x_deg = x_deg -1
@@ -147,6 +171,27 @@ while True:
             roller_servo1.goto(x_deg) 
             roller_servo2.goto(y_deg)
             time.sleep_us(1000)
+         
+        time.sleep(0.5)
+        
+        # go back for easier feed
+
+        message = "{}".format(5)
+        print(message)
+        message_bytes = message.encode('utf-8')
+        uart.write(message_bytes)
+        
+        if drive_stat == 4: # if purple ball then again start searching
+            time.sleep(0.5)
+            message = "{}".format(1)
+            print(message)
+            message_bytes = message.encode('utf-8')
+            uart.write(message_bytes)
+        
+        
+        
+        
+
             
 #         right_us = measure_distance(right_trig, right_echo) 
 #         print("Right: ", right_us) 
