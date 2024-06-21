@@ -1,17 +1,8 @@
 from machine import Pin
-import time
+import time, utime
 
-left_trig = Pin(20, Pin.OUT)   
-left_echo = Pin(21, Pin.IN)
-
-right_trig = Pin(18, Pin.OUT) 
-right_echo = Pin(19, Pin.IN)
-
-# roller_trig = Pin(22, Pin.OUT)
-# roller_echo = Pin(26, Pin.IN)
-
-elevator_trig = Pin(27, Pin.OUT)
-elevator_echo = Pin(28, Pin.IN)
+elevator_trig = Pin(26, Pin.OUT)
+elevator_echo = Pin(22, Pin.IN)
 
 def measure_distance(trigger, echo):
     # Send a 10us pulse to trigger the sensor
@@ -39,13 +30,28 @@ def measure_distance(trigger, echo):
 
     return distance
 
-while True:
-    print("loop")
-    
-    right_us = measure_distance(right_trig, right_echo) 
-    print("Right: ", right_us) 
-    
-    left_us = measure_distance(left_trig, left_echo) 
-    print("Left: ", left_us)
+c = 0
+start_time = utime.ticks_ms()
 
-    time.sleep_ms(1000)
+while utime.ticks_diff(utime.ticks_ms(), start_time) < 30000:  # 3000 ms = 3 seconds
+    elevator = measure_distance(elevator_trig, elevator_echo)
+    print("elevator: ", elevator)
+    
+    if elevator < 4:
+        start_time = utime.ticks_ms()
+        c += 1
+    else:
+        c = 0
+    
+    time.sleep_ms(2000)
+
+    # Check if c has been incremented 60 times (meaning elevator < 4 for 60 consecutive iterations)
+    if c > 60:
+        break
+    
+
+# If loop terminated due to time, print a message
+if utime.ticks_diff(utime.ticks_ms(), start_time) >= 3000:
+    print("Loop terminated due to timeout.")
+else:
+    print("Found Ball")
