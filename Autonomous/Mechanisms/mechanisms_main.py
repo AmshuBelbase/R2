@@ -175,6 +175,18 @@ while True:
         roller_pin1.value(1)
         roller_pin2.value(0)
         
+        x_deg = roller_servo1.get_position() 
+        roller = 280
+        while x_deg != roller:
+            if(x_deg > roller):
+                x_deg = x_deg -1
+            else:
+                x_deg = x_deg +1 
+            y_deg = 1024 - x_deg
+            roller_servo1.goto(x_deg) 
+            roller_servo2.goto(y_deg)
+            time.sleep_us(1000)
+        
         time.sleep(2)
         
 #         x_deg = roller_servo1.get_position()
@@ -211,7 +223,7 @@ while True:
 #         uart.write(message_bytes)
         
         
-        time.sleep(5)
+#         time.sleep(5)
         
         x_deg = roller_servo1.get_position() 
         roller = 700
@@ -224,8 +236,6 @@ while True:
             roller_servo1.goto(x_deg) 
             roller_servo2.goto(y_deg)
             time.sleep_us(1000)
-         
-        time.sleep(0.5)
         
         if drive_stat == 4: # if purple ball then again start searching
             time.sleep(0.5)
