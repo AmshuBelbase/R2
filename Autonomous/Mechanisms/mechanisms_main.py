@@ -44,8 +44,8 @@ stepper_motor = StepperMotor(elevator_step1_pin, elevator_dir1_pin)
 # right_trig = Pin(18, Pin.OUT) 
 # right_echo = Pin(19, Pin.IN)
 
-# roller_trig = Pin(27, Pin.OUT)
-# roller_echo = Pin(28, Pin.IN)
+roller_trig = Pin(22, Pin.OUT)
+roller_echo = Pin(26, Pin.IN)
 
 elevator_trig = Pin(27, Pin.OUT)
 elevator_echo = Pin(28, Pin.IN)
@@ -60,32 +60,73 @@ gate_servo2.goto(300)
 push_servo1.goto(700) 
 push_servo2.goto(300)
 
+roller_pin1.value(0)
+roller_pin2.value(0)
+ 
+x_deg = roller_servo1.get_position() 
+roller = 0
+while x_deg != roller:
+    if(x_deg > roller):
+        x_deg = x_deg -1
+    else:
+        x_deg = x_deg +1 
+    y_deg = 1024 - x_deg
+    roller_servo1.goto(x_deg) 
+    roller_servo2.goto(y_deg)
+    time.sleep_us(1000)
+    
+time.sleep(3)
+
+stepper_motor.stepper_up(200)
+time.sleep(0.25)
+stepper_motor.stepper_down(200)
+push_servo1.goto(0) 
+push_servo2.goto(1000) 
+
 roller_pin1.value(1)
 roller_pin2.value(0)
 
-x_deg = 700    # 150
+time.sleep_ms(1000)
+
+
+roller_pin1.value(1)
+roller_pin2.value(0)        
+
+print("At 150")
+x_deg = 150    # 150
 y_deg = 1024 - x_deg
 roller_servo1.goto(x_deg) 
 roller_servo2.goto(y_deg)
 
-# x_deg = 500    # 150
-# y_deg = 1024 - x_deg
-# roller_servo1.goto(x_deg) 
-# roller_servo2.goto(y_deg)
-# 
-# time.sleep(4)
-# 
-# x_deg = 1000    # 150
-# y_deg = 1024 - x_deg
-# roller_servo1.goto(x_deg) 
-# roller_servo2.goto(y_deg)
-# 
-# time.sleep(4)
+time.sleep(2)  
+
+print("At 350")
+x_deg = 350    # 150
+y_deg = 1024 - x_deg
+roller_servo1.goto(x_deg) 
+roller_servo2.goto(y_deg)
 
 time.sleep(2)
 
-roller_pin1.value(0)
-roller_pin2.value(0)
+print("At 500")
+x_deg = 500    # 150
+y_deg = 1024 - x_deg
+roller_servo1.goto(x_deg) 
+roller_servo2.goto(y_deg)
+
+time.sleep(2)
+
+
+print("At 1000")
+x_deg = 1000    # 150
+y_deg = 1024 - x_deg
+roller_servo1.goto(x_deg) 
+roller_servo2.goto(y_deg)
+time.sleep(0.25)
+
+
+# roller_pin1.value(0)
+# roller_pin2.value(0)
 
 # ----------------- GLOBAL AVRIABLES -----------------
 
@@ -153,7 +194,7 @@ while True:
         roller_pin1.value(1)
         roller_pin2.value(0)
         x_deg = roller_servo1.get_position() 
-        roller = 180
+        roller = 0
         while x_deg != roller:
             if(x_deg > roller):
                 x_deg = x_deg -1
@@ -174,47 +215,62 @@ while True:
             gate_servo2.goto(300)
             
         roller_pin1.value(1)
-        roller_pin2.value(0)
+        roller_pin2.value(0)        
         
-        x_deg = roller_servo1.get_position() 
-        roller = 300
-        while x_deg != roller:
-            if(x_deg > roller):
-                x_deg = x_deg -1
-            else:
-                x_deg = x_deg +1 
-            y_deg = 1024 - x_deg
-            roller_servo1.goto(x_deg) 
-            roller_servo2.goto(y_deg)
-            time.sleep_us(1000)
-        
-        time.sleep(1)        
-        
-        x_deg = 500    # 150
+        print("At 150")
+        x_deg = 150    # 150
         y_deg = 1024 - x_deg
         roller_servo1.goto(x_deg) 
         roller_servo2.goto(y_deg)
 
-        time.sleep(2.5)
-        
-        message = "{}".format(5)
-        print("Sent: ",message)
-        message_bytes = message.encode('utf-8')
-        uart.write(message_bytes)
-        
-        roller_pin1.value(0)
-        roller_pin2.value(1)
-        time.sleep(0.2)
-        
-        roller_pin1.value(1)
-        roller_pin2.value(0)
+        time.sleep(2)  
 
+        print("At 350")
+        x_deg = 350    # 150
+        y_deg = 1024 - x_deg
+        roller_servo1.goto(x_deg) 
+        roller_servo2.goto(y_deg)
+
+        time.sleep(2)
+
+        print("At 1000")
         x_deg = 1000    # 150
         y_deg = 1024 - x_deg
         roller_servo1.goto(x_deg) 
         roller_servo2.goto(y_deg)
-
-        time.sleep(2.5)
+        time.sleep(0.25)
+        
+        
+        
+#         x_deg = roller_servo1.get_position() 
+#         roller = 300
+#         while x_deg != roller:
+#             if(x_deg > roller):
+#                 x_deg = x_deg -1
+#             else:
+#                 x_deg = x_deg +1 
+#             y_deg = 1024 - x_deg
+#             roller_servo1.goto(x_deg) 
+#             roller_servo2.goto(y_deg)
+#             time.sleep_us(1000)
+#         
+#         time.sleep(1)        
+#         
+#         x_deg = 500    # 150
+#         y_deg = 1024 - x_deg
+#         roller_servo1.goto(x_deg) 
+#         roller_servo2.goto(y_deg)
+# 
+#         time.sleep(2.5)
+        
+#         message = "{}".format(5)
+#         print("Sent: ",message)
+#         message_bytes = message.encode('utf-8')
+#         uart.write(message_bytes)
+        
+#         roller_pin1.value(0)
+#         roller_pin2.value(1)
+#         time.sleep(0.2) 
         
         x_deg = roller_servo1.get_position() 
         roller = 500
@@ -237,7 +293,7 @@ while True:
         else:                
             c = 0
             start_time = utime.ticks_ms()
-            while utime.ticks_diff(utime.ticks_ms(), start_time) < 3000:  # 3000 ms = 3 seconds
+            while utime.ticks_diff(utime.ticks_ms(), start_time) < 4500:  # 3000 ms = 3 seconds
                 elevator = measure_distance(elevator_trig, elevator_echo)
                 print("elevator: ", elevator)
                 
@@ -253,7 +309,7 @@ while True:
                 if c > 60:
                     break
 
-            # If loop terminated due to time, print a message
+            # If loop terminated due to timeout
             if utime.ticks_diff(utime.ticks_ms(), start_time) >= 3000:
                 print("Loop terminated due to timeout.")
                 drive_stat = 1 
@@ -262,16 +318,26 @@ while True:
                 message_bytes = message.encode('utf-8')
                 uart.write(message_bytes)
             else:
-                stepper_motor.stepper_up(500)
-                time.sleep(0.5)
-                stepper_motor.stepper_down(500)
+                gate_servo1.goto(700) 
+                gate_servo2.goto(300)
+                push_servo1.goto(700) 
+                push_servo2.goto(300)
+                
+                stepper_motor.stepper_up(1250)
+                
+                drive_stat = 6
+                message = "{}".format(drive_stat)
+                print("Sent: ",message)
+                message_bytes = message.encode('utf-8')
+                uart.write(message_bytes)
+                
+#                 time.sleep(1)
+#                 stepper_motor.stepper_up(900)
+#                 push_servo1.goto(0) 
+#                 push_servo2.goto(1000)
+#                 time.sleep(1)
+#                 stepper_motor.stepper_down(2150)
+#                 push_servo1.goto(700) 
+#                 push_servo2.goto(300)
         
-        
-
-            
-#         right_us = measure_distance(right_trig, right_echo) 
-#         print("Right: ", right_us) 
-#         
-#         left_us = measure_distance(left_trig, left_echo) 
-#         print("Left: ", left_us)
-
+         
