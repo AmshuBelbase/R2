@@ -111,10 +111,13 @@ def measure_distance(trigger, echo):
 def save_to_csv(data): 
   with open(csv_filename, "a") as f: 
     f.write(data + "\n")
+    
+def save_to_csv_cam(data): 
+  with open(area3_filename, "a") as f: 
+    f.write(data + "\n")
 
 # ----------------- INITIAL POSITIONS -----------------
-
-print("Warming Up")
+ 
 drive(0,0,0,0)
 
 i = 1
@@ -127,8 +130,7 @@ while i<=time_s:
     led_pin.value(0)
     time.sleep_ms(500)
 led_pin.value(1)
-
-print("Started")
+ 
 
 
 # ----------------- READ ULTRASONICS -----------------
@@ -142,13 +144,10 @@ while False:
     print("Front Left: ", front_left_us)
 
     left_front_us = measure_distance(left_front_trig, left_front_echo)  
-    print("Left Front: ", left_front_us) 
-
-    right_front_us = measure_distance(right_front_trig, right_front_echo)  
-    print("Right Front: ", right_front_us)
+    print("Left Front: ", left_front_us)  
     
-#     front_right_us = measure_distance(front_right_trig, front_right_echo)
-#     print("Front Right: ", front_right_us)
+    front_right_us = measure_distance(front_right_trig, front_right_echo)
+    print("Front Right: ", front_right_us)
 
     time.sleep_ms(10)
     
@@ -170,19 +169,17 @@ garbage_c = 0
 forward_c = 0
 
 csv_filename = "us_data.csv"
+area3_filename = "area3_data.csv"
 
 # ----------------- MAIN CODE -----------------
 
 
 message = "{}".format(drive_stat)
-print(message)
 message_bytes = message.encode('utf-8')
 uart.write(message_bytes)
 time.sleep_ms(5)
 save_to_csv(" ------------------- NEW ATTEMPT -------------------")
-while False:
-    
-    print("loop") 
+while False: 
     us_data = ''
     buffer = ''  
     select_result = uselect.select([stdin], [], [], 0)
@@ -193,38 +190,27 @@ while False:
         else:
             try:
                 data = [int(i) for i in buffer.split('|')]
-#                 print(data)
             except ValueError:
-                print("Non-integer detected.")
                 continue 
             buffer = ''
         select_result = uselect.select([stdin], [], [], 0)  
 
     
     left_back_us = measure_distance(left_back_trig, left_back_echo)  
-    print("Left Back: ", left_back_us)
     time.sleep_ms(1)
     us_data = us_data + f" | Left Back: {left_back_us:.2f}"
     
     left_front_us = measure_distance(left_front_trig, left_front_echo)  
-    print("Left Front: ", left_front_us)
     time.sleep_ms(1)
     us_data = us_data + f" | Left Front: {left_front_us:.2f}"
     
-    front_left_us = measure_distance(front_left_trig, front_left_echo) 
-    print("Front Left: ", front_left_us)        
+    front_left_us = measure_distance(front_left_trig, front_left_echo)       
     time.sleep_ms(1)
     us_data = us_data + f" | Front Left: {front_left_us:.2f}"
     
     front_right_us = measure_distance(front_right_trig, front_right_echo)
-    print("Front Right: ", front_right_us)
     time.sleep_ms(1)
-    us_data = us_data + f" | Front Right: {front_right_us:.2f}"
-
-#     right_front_us = measure_distance(right_front_trig, right_front_echo)  
-#     print("Right Front: ", right_front_us)
-#     time.sleep_ms(1)
-#     us_data = us_data + f" | Right Front: {right_front_us:.2f}"
+    us_data = us_data + f" | Front Right: {front_right_us:.2f}" 
     
     if(front_left_us <=140 and front_right_us <= 140):
         d = medium
@@ -233,94 +219,74 @@ while False:
         
     if(front_left_us <= 45 and front_right_us <= 45):
         if(abs(front_left_us-front_right_us) >= 2):
-            if(front_left_us > front_right_us):
-                print("Clockwise 1")
+            if(front_left_us > front_right_us): 
                 us_data = us_data + " | Clockwise 1"
                 drive(slow,-slow,slow,-slow)
-            else:
-                print("Anti Clockwise 1")
+            else: 
                 us_data = us_data + " | Anti Clockwise 1"
                 drive(-slow,slow,-slow,slow)
-        elif(front_left_us <= 12 and front_right_us <= 12): 
-            print("Back 1")
+        elif(front_left_us <= 12 and front_right_us <= 12):
             us_data = us_data + " | Back 1"
             drive(0,slow,0,-slow)
         elif(front_left_us <= 20 and front_right_us <= 20): #and right_front_us > 160
-            print("Move Right 1")
             us_data = us_data + " | Move Right 1"
             drive(fast_med,0,-fast_med,0)
         else:
-            print("Front 1")
             us_data = us_data + " | Front 1"
             drive(0,-slow,0,slow)
     elif(left_front_us <= 40 and left_back_us <= 40):
         if(abs(left_front_us-left_back_us) >= 4):
-            if(left_back_us > left_front_us):
-                print("Clockwise 2")
+            if(left_back_us > left_front_us): 
                 us_data = us_data + " | Clockwise 2"
                 drive(slow,-slow,slow,-slow)
-            else:
-                print("Anti Clockwise 2")
+            else: 
                 us_data = us_data + " | Anti Clockwise 2"
                 drive(-slow,slow,-slow,slow)
-        elif(left_front_us <= 10 and left_back_us <= 10):
-            print("Diagonal Front Right 2")
+        elif(left_front_us <= 10 and left_back_us <= 10): 
             us_data = us_data + " | Diagonal Front Right 2"
             drive(slow,-slow,-slow,slow)
-        elif(left_front_us <= 27 and left_back_us <= 27):
-            print("Straight 2")
+        elif(left_front_us <= 27 and left_back_us <= 27): 
             us_data = us_data + " | Straight 2"
             drive(0,-d,0,d)
         else:
-            print("Diagonal Front Left 2")
             us_data = us_data + " | Diagonal Front Left 2"
             drive(-slow,-slow,slow,slow) 
-    elif(front_right_us > 45 and front_left_us < 45):
-        print("Moving right 6")
+    elif(front_right_us > 45 and front_left_us < 45): 
         us_data = us_data + " | Moving right 6"
         drive(slow,0,-slow,0)
-    elif(front_left_us >= 45 and front_right_us >= 45):
-        print("Stop 3")
+    elif(front_left_us >= 45 and front_right_us >= 45): 
         us_data = us_data + " | Stop 3"
         drive(0,0,0,0)
-        forward_c += 1
-        print("forward_c:",forward_c)
+        forward_c += 1 
         us_data = us_data + " | forward_c: " + str(forward_c)
         if(forward_c >= 5):
-            print("Moving right for 0.7 seconds 3")
             us_data = us_data + " | Moving right for 0.7 seconds 3"
             drive(medium,0,-medium,0)
-            time.sleep(0.7)
-            print("Moving straight for 2 seconds 3")
+            time.sleep(0.7) 
             us_data = us_data + " | Moving straight for 2 seconds 3"
             drive(0,-super_fast,0,super_fast)
-            time.sleep(2)
-            print("Anticlockwise for 0.8 seconds 3")
+            time.sleep(2) 
             us_data = us_data + " | Anticlockwise for 0.8 seconds 3"
             drive(-medium,medium,-medium,medium)
             time.sleep_ms(800)
             us_data = us_data + " | Moving straight for 2 seconds 3"
             drive(0,-medium,0,medium)
-            time.sleep(2)
-            print("Stop 3")
+            time.sleep(2) 
             us_data = us_data + " | Stop 3"
             drive(0,0,0,0)
             drive_stat = 1 #1
             break 
-    else:
-        print("Stop - Confused 7")
+    else: 
         us_data = us_data + " | Stop - Confused 7"
         drive(0,0,0,0)
-        garbage_c += 1
-        print("garbage_c:",garbage_c)
+        garbage_c += 1 
         us_data = us_data + " | garbage_c: " + str(garbage_c)
         if(garbage_c >= 2):
             pass
     time.sleep_ms(2)
     save_to_csv(us_data)
     
-message = "{}".format(drive_stat)
-print(message)
+message = "{}".format(drive_stat) 
 message_bytes = message.encode('utf-8')
 uart.write(message_bytes)
 
@@ -352,9 +318,12 @@ ranges = [
 # drive_stat = 3  | FEED BALL
 # drive_stat = 4  | FEED BALL, DISCARD, drive_stat = 1
 # drive_stat = 5  | GO BACK FOR EASIER FEED
-# drive_stat = 6  | SEARCH SILOS
+# drive_stat = 6  | GO BACK AFTER PICKING
+# drive_stat = 7  | SEARCH SILOS
+# drive_stat = 8  | PUT BALL IN SILO
 
 while True:
+    area3_data = ''
     det_c = -1
     buffer = ''  
     select_result = uselect.select([stdin], [], [], 0)
@@ -365,15 +334,12 @@ while True:
         else:
             try:
                 data = [int(i) for i in buffer.split('|')]
-#                 print(data)
             except ValueError:
-                print("Non-integer detected.")
                 continue 
             buffer = ''
         select_result = uselect.select([stdin], [], [], 0)
     
-    if uart.any():
-        print("received")
+    if uart.any(): 
         message_bytes = uart.read()
         message = message_bytes.decode('utf-8')
         li = list(message.split(","))
@@ -381,13 +347,13 @@ while True:
             drive_stat = int(li[0])
         else:
             continue
-        print(drive_stat)
-    
+        area3_data = area3_data + f" | drive_stat: {drive_stat:.2f}"     
     if(drive_stat == 0): 
         drive(0,0,0,0)
         
     if data and drive_stat == 7:
-        print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4]))
+#         print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4]))
+        area3_data = area3_data + f" | Received data: 0: {data[0]}, 1: {data[1]}, 2: {data[2]}, 3: {data[3]}, 4: {data[4]}"
         wm1 = int(map(data[0], -255, 255, -62000, 62000))
         wm2 = int(map(data[1], -255, 255, -62000, 62000))
         wm3 = int(map(data[2], -255, 255, -62000, 62000))
@@ -397,11 +363,13 @@ while True:
         # -2 : Yellow | -1 : No Detection | -3 : Near | -4 : Far | -5 : Aligned
          
         front_left_us = measure_distance(front_left_trig, front_left_echo) 
-        print("Front Left: ", front_left_us)        
+#         print("Front Left: ", front_left_us)
+        area3_data = area3_data + f" | Front Left: {front_left_us:.2f}"
         time.sleep_ms(1) 
         
         front_right_us = measure_distance(front_right_trig, front_right_echo)
-        print("Front Right: ", front_right_us)
+#         print("Front Right: ", front_right_us)
+        area3_data = area3_data + f" | Front Right: {front_right_us:.2f}"
         time.sleep_ms(1)
         
         if data[4] == -2 and front_left_us < 10 and front_right_us < 10 and abs(front_left_us-front_right_us) < 2:
@@ -409,13 +377,15 @@ while True:
             drive(0,medium,0,-medium)
             time.sleep(0.5)
             if right_move == 1:
-                print("Move Right for a Second")
+#                 print("Move Right for a Second")
+                area3_data = area3_data + f" | Move Right for a Second"
                 drive(medium,0,-medium,0)
                 time.sleep(1)
                 drive(0,0,0,0)
                 right_move = 0
             else:
-                print("Move Left for a Second")
+#                 print("Move Left for a Second")
+                area3_data = area3_data + f" | Move Left for a Second"
                 drive(-medium,0,medium,0)
                 time.sleep(1)
                 drive(0,0,0,0)
@@ -424,30 +394,27 @@ while True:
         if data[4] != -1 and front_left_us < 120 and front_right_us < 120 and abs(front_left_us-front_right_us) >= 3:
             adjust = 1
             if(front_left_us > front_right_us):
-                print("Clockwise 1")
+#                 print("Clockwise 1")
+                area3_data = area3_data + f" | Clockwise 1"
 
                 drive(slow,-slow,slow,-slow)
             else:
-                print("Anti Clockwise 1")
+#                 print("Anti Clockwise 1")
+                area3_data = area3_data + f" | Anti Clockwise 1"
 
-                drive(-slow,slow,-slow,slow)
-        
-        if data[4] == -5 and adjust == 0:
-            data[4] = -3
-            wm1 == 0
-            wm3 == 0
+                drive(-slow,slow,-slow,slow) 
             
         if adjust == 0:
             mul_fac = 1
-            print("Before Mapping")
-            print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
-                
+#             print("Before Mapping")
+#             print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
+            area3_data = area3_data + f" | Before Mapping: W1: {wm1}, W2: {wm2}, W3: {wm3}, W4: {wm4}"
             if data[4] == -3:
-                if wm1 == 0 and wm3 == 0 and front_left_us <= 80 and front_left_us <= 80:
-#                 if wm1 == 0 and wm3 == 0 and front_left_us < 120 and front_right_us < 120:
-                    print("Centered")
-                    while front_left_us > 8 and front_left_us > 8:
-                        print("Moving near Silo")
+#                 if wm1 == 0 and wm3 == 0 and front_left_us <= 50 and front_left_us <= 50:
+                if wm1 == 0 and wm3 == 0 and front_left_us < 120 and front_right_us < 120:
+#                     print("Centered")
+                    area3_data = area3_data + f" | Centered"
+                    while front_left_us > 2 and front_left_us > 2:
                         buffer = ''  
                         select_result = uselect.select([stdin], [], [], 0)
                         while select_result[0]:
@@ -457,42 +424,50 @@ while True:
                             else:
                                 try:
                                     data = [int(i) for i in buffer.split('|')]
-                    #                 print(data)
                                 except ValueError:
-                                    print("Non-integer detected.")
                                     continue 
                                 buffer = ''
                             select_result = uselect.select([stdin], [], [], 0)
                         wm1 = 0
-                        wm2 = -8000
+                        wm2 = -3500
                         wm3 = 0
-                        wm4 = 8000
+                        wm4 = 3500
                         drive(wm1*1, wm2*1, wm3*1, wm4*1)
                         
                         front_left_us = measure_distance(front_left_trig, front_left_echo) 
-                        print("Front Left: ", front_left_us)        
+#                         print("Front Left: ", front_left_us)
+                        area3_data = area3_data + f" | Front Left: {front_left_us:.2f}"
                         time.sleep_ms(1) 
                         
                         front_right_us = measure_distance(front_right_trig, front_right_echo)
-                        print("Front Right: ", front_right_us)
+#                         print("Front Right: ", front_right_us)
+                        area3_data = area3_data + f" | Front Right: {front_right_us:.2f}"
                         time.sleep_ms(1)
-                    drive_stat = 0
+                    drive_stat = 8
                     wm2 = 0
                     wm4 = 0
                     wm1 = 0
                     wm3 = 0
-                    print("JOB DONE")
+                    drive(wm1*1, wm2*1, wm3*1, wm4*1)
+                    message = "{}".format(drive_stat) 
+                    message_bytes = message.encode('utf-8')
+                    uart.write(message_bytes)
+                    area3_data = area3_data + f" |Sent Signal to mech to put ball in silo drive_stat: {drive_stat:.2f}"
+                    drive_stat = 0
+                    area3_data = area3_data + f" |Wait drive_stat: {drive_stat:.2f}"
+                        
 #                 if wm1 == 0 and wm3 == 0 and front_left_us > 50 and front_left_us > 50:
 #                     wm2 = -3500
 #                     wm4 = 3500
-                elif front_left_us < 50 or front_right_us < 50:
-                    print("Aligning")
+                elif front_left_us < 100 or front_right_us < 100:
+#                     print("Aligning")
+                    area3_data = area3_data + f" | Aligning"
                     if wm1 < 0:
-                        wm1 = -2201
-                        wm3 = 2201
+                        wm1 = -2001
+                        wm3 = 2001
                     else:
-                        wm1 = 2201
-                        wm3 = -2201
+                        wm1 = 2001
+                        wm3 = -2001
                     wm2 = 0
                     wm4 = 0
             
@@ -506,14 +481,15 @@ while True:
             wm3 = int(mul_fac * wm3)
             wm4 = int(mul_fac * wm4) 
             
-            print("After Mapping")
-            print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
-            print("")
+#             print("After Mapping")
+#             print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
+            area3_data = area3_data + f" | AFter Mapping: W1: {wm1}, W2: {wm2}, W3: {wm3}, W4: {wm4}"
+#             print("")
             drive(wm1*1, wm2*1, wm3*1, wm4*1) 
         data.clear()
     if data and drive_stat == 1:
-        print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4]))
-        
+#         print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4]))
+        area3_data = area3_data + f" | Received data: 0: {data[0]}, 1: {data[1]}, 2: {data[2]}, 3: {data[3]}, 4: {data[4]}"
         if -13 <= data[0] <= -7 and data[1] >= -43: # -15 -5
             data[0] = 0
             data[1] = 0
@@ -521,7 +497,8 @@ while True:
             data[3] = 0
             drive_stat = 2 # ball is in the range
             det_c = data[4] # class of detected object
-            print("Drive stat 2")
+#             print("Drive stat 2")
+            area3_data = area3_data + f" | Drive Stat 2"
         elif data[0] < -13 and data[1] >= -70:  # ANTICLOCK
             data[0] = -8 # 17
             data[1] = 8
@@ -539,9 +516,9 @@ while True:
         wm4 = int(map(data[3], -255, 255, -62000, 62000))
         
         mul_fac = 1
-        print("Before Mapping")
-        print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
-
+#         print("Before Mapping")
+#         print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
+        area3_data = area3_data + f" | Before Mapping: W1: {wm1}, W2: {wm2}, W3: {wm3}, W4: {wm4}"
         for min_val, max_val, factor in ranges:
             if all(min_val <= abs(var) <= max_val for var in (wm1, wm2, wm3, wm4)):
                 mul_fac = factor
@@ -552,9 +529,12 @@ while True:
         wm3 = int(mul_fac * wm3)
         wm4 = int(mul_fac * wm4)
         
-        print("After Mapping")
-        print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
-        print("")
+#         print("After Mapping")
+#         print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
+#         print("")
+
+        area3_data = area3_data + f" | After Mapping: W1: {wm1}, W2: {wm2}, W3: {wm3}, W4: {wm4}"
+
         drive(wm1*1, wm2*1, wm3*1, wm4*1) 
         data.clear()
         
@@ -570,7 +550,7 @@ while True:
         # open the roller
         
         message = "{}".format(drive_stat) 
-        print(message)
+#         print(message)
         message_bytes = message.encode('utf-8')
         uart.write(message_bytes)
         time.sleep(0.25)
@@ -590,7 +570,7 @@ while True:
             drive_stat = 4 # if purple ball then discard
             
         message = "{}".format(drive_stat)
-        print(message)
+#         print(message)
         message_bytes = message.encode('utf-8')
         uart.write(message_bytes)
         
@@ -603,10 +583,15 @@ while True:
         drive_stat = 0
         
     if(drive_stat == 6):
-        print("Go back for ZED - SILO view")
+#         print("Go back for ZED - SILO view")
+        area3_data = area3_data + f" | Go back for ZED - SILO view"
         drive(0, 5000,0, -5000)
         time.sleep(2)
-        drive_stat = 0
+        drive_stat = 7
+    
+    
+    save_to_csv_cam(area3_data)
+    
         
         
         

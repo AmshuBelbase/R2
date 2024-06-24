@@ -89,40 +89,8 @@ roller_pin2.value(0)
 time.sleep_ms(1000)
 
 
-roller_pin1.value(1)
+roller_pin1.value(0)
 roller_pin2.value(0)        
-
-print("At 150")
-x_deg = 150    # 150
-y_deg = 1024 - x_deg
-roller_servo1.goto(x_deg) 
-roller_servo2.goto(y_deg)
-
-time.sleep(2)  
-
-print("At 350")
-x_deg = 350    # 150
-y_deg = 1024 - x_deg
-roller_servo1.goto(x_deg) 
-roller_servo2.goto(y_deg)
-
-time.sleep(2)
-
-print("At 500")
-x_deg = 500    # 150
-y_deg = 1024 - x_deg
-roller_servo1.goto(x_deg) 
-roller_servo2.goto(y_deg)
-
-time.sleep(2)
-
-
-print("At 1000")
-x_deg = 1000    # 150
-y_deg = 1024 - x_deg
-roller_servo1.goto(x_deg) 
-roller_servo2.goto(y_deg)
-time.sleep(0.25)
 
 
 # roller_pin1.value(0)
@@ -204,7 +172,15 @@ while True:
             roller_servo1.goto(x_deg) 
             roller_servo2.goto(y_deg)
             time.sleep_us(1000)
-            
+    if drive_stat == 8:
+        stepper_motor.stepper_up(900)
+        push_servo1.goto(0) 
+        push_servo2.goto(1000)
+        time.sleep(1)
+        stepper_motor.stepper_down(2150)
+        push_servo1.goto(700) 
+        push_servo2.goto(300)
+        drive_stat = 0
     if(drive_stat == 3 or drive_stat == 4):
         
         if drive_stat == 3: # if red or blue ball then feed
@@ -232,6 +208,15 @@ while True:
         roller_servo2.goto(y_deg)
 
         time.sleep(2)
+
+        print("At 500")
+        x_deg = 500    # 150
+        y_deg = 1024 - x_deg
+        roller_servo1.goto(x_deg) 
+        roller_servo2.goto(y_deg)
+
+        time.sleep(2)
+
 
         print("At 1000")
         x_deg = 1000    # 150
