@@ -8,6 +8,8 @@ import uselect
 
 # ----------------- PINOUTS -----------------
 
+#magnetometer  - 8 sda and 9 scl (mechanisms)
+
 m1_pwm = PWM(Pin(4))
 m1_dir = Pin(14, Pin.OUT)
 m2_pwm = PWM(Pin(16))
@@ -115,6 +117,7 @@ def save_to_csv(data):
 def clear_csv(data): 
   with open(csv_filename, "w") as f: 
     f.write(data + "\n")
+
 
 
 # ----------------- GLOBAL AVRIABLES -----------------
@@ -594,7 +597,7 @@ while True:
     if data and drive_stat == 1:
 #         print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4])) 
         us_data = us_data + " | Received data: 0: "+str(data[0])+", 1: "+str(data[1])+", 2: "+str(data[2])+", 3: "+str(data[3])+", 4: "+str(data[4])
-        if -13 <= data[0] <= -7 and data[1] >= -60: # -15 -5
+        if -13 <= data[0] <= -7 and data[1] >= -50: # -15 -5
             data[0] = 0
             data[1] = 0
             data[2] = 0
@@ -733,6 +736,7 @@ while True:
         save_to_csv(us_data)    
 
 # ----------------- END -----------------   
+
 
 
 
