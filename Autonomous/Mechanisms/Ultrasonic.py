@@ -1,8 +1,12 @@
 from machine import Pin
 import time, utime
 
-elevator_trig = Pin(26, Pin.OUT)
-elevator_echo = Pin(22, Pin.IN)
+elevator_trig = Pin(22, Pin.OUT)
+elevator_echo = Pin(26, Pin.IN)
+
+
+led_pin = Pin(25, Pin.OUT)
+led_pin.value(1)
 
 def measure_distance(trigger, echo):
     # Send a 10us pulse to trigger the sensor
@@ -30,20 +34,21 @@ def measure_distance(trigger, echo):
 
     return distance
 
+ 
 c = 0
 start_time = utime.ticks_ms()
 
-while utime.ticks_diff(utime.ticks_ms(), start_time) < 30000:  # 3000 ms = 3 seconds
+while utime.ticks_diff(utime.ticks_ms(), start_time) < 5000:  # 3000 ms = 3 seconds
     elevator = measure_distance(elevator_trig, elevator_echo)
     print("elevator: ", elevator)
-    
+    print(start_time)
     if elevator < 4:
         start_time = utime.ticks_ms()
         c += 1
     else:
         c = 0
     
-    time.sleep_ms(2000)
+    time.sleep_ms(10)
 
     # Check if c has been incremented 60 times (meaning elevator < 4 for 60 consecutive iterations)
     if c > 60:
@@ -51,7 +56,7 @@ while utime.ticks_diff(utime.ticks_ms(), start_time) < 30000:  # 3000 ms = 3 sec
     
 
 # If loop terminated due to time, print a message
-if utime.ticks_diff(utime.ticks_ms(), start_time) >= 3000:
+if utime.ticks_diff(utime.ticks_ms(), start_time) >= 5000:
     print("Loop terminated due to timeout.")
 else:
     print("Found Ball")

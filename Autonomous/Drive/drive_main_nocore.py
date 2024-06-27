@@ -121,14 +121,20 @@ def clear_csv(data):
 
 data = []  
 
-drive_stat = 7
+drive_stat = 0
 right_move = 1
 
-slow = 3800
+slow = 3500
 medium = 8000
 fast = 20000
 fast_med = 16000
 super_fast = 36000
+# d = 18000
+
+slow_us = 4500
+medium_us = 9000
+fast_us = 24000
+super_fast_us = 36000
 d = 18000
 
 garbage_c = 0
@@ -145,7 +151,7 @@ save_to_csv("Warming Up")
 drive(0,0,0,0)
 
 i = 1
-time_s = 5       
+time_s = 1     
 led_pin.value(0)
 while i<=time_s:
     i=i+1
@@ -182,21 +188,8 @@ while False:
 
 
 # ----------------- MAIN CODE -----------------
-
-
-message = "{}".format(drive_stat)
-# print(message)
-us_data = f" | message: " + str(message)
-message_bytes = message.encode('utf-8')
-uart.write(message_bytes)
-time.sleep_ms(5)
-save_to_csv(" ------------------- AREA 1 TO AREA 3 -------------------")
-save_to_csv(us_data)
-while False:
-    
-#     print("loop")
-    save_to_csv("loop")
-    us_data = ''
+us_data = ''
+while drive_stat == 0:
     buffer = ''  
     select_result = uselect.select([stdin], [], [], 0)
     while select_result[0]:
@@ -213,132 +206,157 @@ while False:
                 us_data = us_data + f" | Non-integer detected"
                 continue 
             buffer = ''
-        select_result = uselect.select([stdin], [], [], 0)  
+        select_result = uselect.select([stdin], [], [], 0)
+        
+    if uart.any():
+#         print("received")
+        message_bytes = uart.read()
+        message = message_bytes.decode('utf-8') 
+        us_data = us_data + " | received: " + str(message)
+        li = list(message.split(","))
+        if(len(li) == 1): 
+            drive_stat = int(li[0])
+        else:
+            continue
+#         print(drive_stat)
+        us_data = us_data + " | Drive Stat: " + str(drive_stat)
 
-    
-    left_back_us = measure_distance(left_back_trig, left_back_echo)  
-#     print("Left Back: ", left_back_us)
-    time.sleep_ms(1)
-    us_data = us_data + f" | Left Back: {left_back_us:.2f}"
-    
-    left_front_us = measure_distance(left_front_trig, left_front_echo)  
-#     print("Left Front: ", left_front_us)
-    time.sleep_ms(1)
-    us_data = us_data + f" | Left Front: {left_front_us:.2f}"
+
+message = "{}".format(drive_stat)
+# print(message)
+us_data += f" | message: " + str(message)
+message_bytes = message.encode('utf-8')
+uart.write(message_bytes)
+time.sleep_ms(5)
+save_to_csv(" ------------------- AREA 1 TO AREA 3 -------------------")
+save_to_csv(us_data)
+
+while True:
+#     print("loop")
     
     front_left_us = measure_distance(front_left_trig, front_left_echo) 
 #     print("Front Left: ", front_left_us)        
     time.sleep_ms(1)
-    us_data = us_data + f" | Front Left: {front_left_us:.2f}"
+
+    left_front_us = measure_distance(left_front_trig, left_front_echo)  
+#     print("Left Front: ", left_front_us)
+    time.sleep_ms(1)
+
+    left_back_us = measure_distance(left_back_trig, left_back_echo)  
+#     print("Left Back: ", left_back_us)
+    time.sleep_ms(1)
+
+#         right_front_us = measure_distance(right_front_trig, right_front_echo)  
+#         print("Right Front: ", right_front_us)
+#         time.sleep_ms(1)
     
     front_right_us = measure_distance(front_right_trig, front_right_echo)
 #     print("Front Right: ", front_right_us)
-    time.sleep_ms(1)
-    us_data = us_data + f" | Front Right: {front_right_us:.2f}"
-
-#     right_front_us = measure_distance(right_front_trig, right_front_echo)  
-#     print("Right Front: ", right_front_us)
-#     time.sleep_ms(1)
-#     us_data = us_data + f" | Right Front: {right_front_us:.2f}"
+    time.sleep_ms(1)       
     
     if(front_left_us <=140 and front_right_us <= 140):
-        d = medium
+        d = medium_us
     else:
-        d = fast
+        d = fast_us
         
-    if(front_left_us <= 45 and front_right_us <= 45):
-        if(abs(front_left_us-front_right_us) >= 2):
+    if(front_left_us <= 55 and front_right_us <= 55):
+        if(abs(front_left_us-front_right_us) >= 3):
             if(front_left_us > front_right_us):
 #                 print("Clockwise 1")
-                us_data = us_data + " | Clockwise 1"
-                drive(slow,-slow,slow,-slow)
+                drive(slow_us,-slow_us,slow_us,-slow_us)
             else:
 #                 print("Anti Clockwise 1")
-                us_data = us_data + " | Anti Clockwise 1"
-                drive(-slow,slow,-slow,slow)
-        elif(front_left_us <= 12 and front_right_us <= 12): 
-#             print("Back 1")
-            us_data = us_data + " | Back 1"
-            drive(0,slow,0,-slow)
-        elif(front_left_us <= 20 and front_right_us <= 20): #and right_front_us > 160
+                drive(-slow_us,slow_us,-slow_us,slow_us)
+        elif(front_left_us <= 10 and front_right_us <= 10): 
+#             print("Back")
+            drive(0,slow_us,0,-slow_us)
+        elif(front_left_us <= 17 and front_right_us <= 17): #and right_front_us > 160
 #             print("Move Right 1")
-            us_data = us_data + " | Move Right 1"
-            drive(fast_med,0,-fast_med,0)
+            drive(fast_us,0,-fast_us,0)
         else:
-#             print("Front 1")
-            us_data = us_data + " | Front 1"
-            drive(0,-slow,0,slow)
-    elif(left_front_us <= 40 and left_back_us <= 40):
+#             print("Front")
+            drive(0,-slow_us,0,slow_us)
+    elif(left_front_us <= 65 and left_back_us <= 65):
         if(abs(left_front_us-left_back_us) >= 4):
             if(left_back_us > left_front_us):
 #                 print("Clockwise 2")
-                us_data = us_data + " | Clockwise 2"
-                drive(slow,-slow,slow,-slow)
+                drive(slow_us,-slow_us,slow_us,-slow_us)
             else:
 #                 print("Anti Clockwise 2")
-                us_data = us_data + " | Anti Clockwise 2"
-                drive(-slow,slow,-slow,slow)
+                drive(-slow_us,slow_us,-slow_us,slow_us)
         elif(left_front_us <= 10 and left_back_us <= 10):
 #             print("Diagonal Front Right 2")
-            us_data = us_data + " | Diagonal Front Right 2"
-            drive(slow,-slow,-slow,slow)
+            drive(medium_us,-medium_us,-medium_us,medium_us)
         elif(left_front_us <= 27 and left_back_us <= 27):
 #             print("Straight 2")
-            us_data = us_data + " | Straight 2"
             drive(0,-d,0,d)
         else:
 #             print("Diagonal Front Left 2")
-            us_data = us_data + " | Diagonal Front Left 2"
-            drive(-slow,-slow,slow,slow) 
+            drive(-medium_us,-medium_us,medium_us,medium_us)
+#         elif(right_front_us >=118 and right_front_us <=128):
+#             print("Stop 0")
+#             drive(0,0,0,0)
+#             forward_c += 1
+#             print("forward_c:",forward_c)
+#             if(forward_c >= 2):
+#                 print("Moving straight for 2.5 seconds 3")
+#                 drive(0,-super_fast_us,0,super_fast_us)
+#                 time.sleep_ms(1750)
+#                 print("Anticlockwise for 1 seconds 3")
+#                 drive(-medium_us,medium_us,-medium_us,medium_us)
+#                 time.sleep_ms(500)
+#                 print("Stop 3")
+#                 drive(0,0,0,0)
+#                 drive_stat = 1 #1
+#                 break 
+#         elif(right_front_us <128):
+#             print("Move Left 2")
+#             drive(-slow_us,0,slow_us,0)
+#         elif(right_front_us <= 160):
+#             print("Moving right 5")
+#             drive(slow_us,0,-slow_us,0)
     elif(front_right_us > 45 and front_left_us < 45):
 #         print("Moving right 6")
-        us_data = us_data + " | Moving right 6"
-        drive(slow,0,-slow,0)
+        drive(slow_us,0,-slow_us,0)
     elif(front_left_us >= 45 and front_right_us >= 45):
-#         print("Stop 3")
-        us_data = us_data + " | Stop 3"
+#         print("Stop 3") 
         drive(0,0,0,0)
         forward_c += 1
 #         print("forward_c:",forward_c)
-        us_data = us_data + " | forward_c: " + str(forward_c)
         if(forward_c >= 5):
-#             print("Moving right for 0.7 seconds 3")
-            us_data = us_data + " | Moving right for 0.7 seconds 3"
-            drive(medium,0,-medium,0)
-            time.sleep(0.7)
+#             print("Moving right for 0.3 seconds 3")
+            drive(medium_us,0,-medium_us,0)
+            time.sleep(0.3)
 #             print("Moving straight for 2 seconds 3")
-            us_data = us_data + " | Moving straight for 2 seconds 3"
-            drive(0,-super_fast,0,super_fast)
+            drive(0,-super_fast_us,0,super_fast_us)
             time.sleep(2)
 #             print("Anticlockwise for 0.8 seconds 3")
-            us_data = us_data + " | Anticlockwise for 0.8 seconds 3"
-            drive(-medium,medium,-medium,medium)
-            time.sleep_ms(800)
-            us_data = us_data + " | Moving straight for 2 seconds 3"
-            drive(0,-medium,0,medium)
-            time.sleep(2)
-#             print("Stop 3")
-            us_data = us_data + " | Stop 3"
+            drive(-medium_us,medium_us,-medium_us,medium_us)
+            time.sleep_ms(800) 
+            drive(0,-fast_us,0,fast_us)
+            time.sleep(1.2)
+#             print("Stop 3") 
             drive(0,0,0,0)
             drive_stat = 1 #1
             break 
     else:
 #         print("Stop - Confused 7")
-        us_data = us_data + " | Stop - Confused 7"
         drive(0,0,0,0)
         garbage_c += 1
-#         print("garbage_c:",garbage_c)
-        us_data = us_data + " | garbage_c: " + str(garbage_c)
-        if(garbage_c >= 2):
-            pass
+#         print("garbage_c:",garbage_c) 
     time.sleep_ms(2)
-    save_to_csv(us_data)
-    
+
+us_data = ''
 message = "{}".format(drive_stat)
 us_data = us_data + " | message: " + str(message)
 # print(message)
+message = f"{drive_stat}\n"
+# Send the message over USB CDC (print to USB)
+print(message, end='')
 message_bytes = message.encode('utf-8')
 uart.write(message_bytes)
+
+save_to_csv(" ------------------- INSIDE AREA 3 -------------------")
 
 ranges_silo = [
     (0,250, 20),
@@ -348,16 +366,23 @@ ranges_silo = [
     (0, 4000, 2),
     (0, 5000, 1.2) 
 ]
+# ranges = [
+#     (0, 1000, 3),
+#     (1000, 2000, 2), 
+#     (2000, 4000, 1.5),
+#     (4000, 5000, 1.2),
+#     (5000, 10000, 0.5),
+#     (10000, 20000, 0.35),
+#     (20000, 62000, 0.3)
+# ]
 ranges = [
-    (0,250, 20),
-    (0,500, 15),
-    (0, 1000, 8),
-    (0, 2000, 5), 
-    (0, 4000, 2),
-    (0, 5000, 1.2),
-    (0, 10000, 0.5),
-    (0, 20000, 0.35),
-    (0, 62000, 0.3)
+    (0, 1000, 3),
+    (1000, 2000, 2), 
+    (2000, 4000, 1.5),
+    (4000, 5000, 1.2),
+    (5000, 10000, 0.75),
+    (10000, 20000, 0.5),
+    (20000, 62000, 0.4)
 ]
 
 # ----------------- DRIVE STATUS -----------------
@@ -371,6 +396,7 @@ ranges = [
 # drive_stat = 6  | SEARCH SILOS
 # drive_stat = 7  | SEARCH SILOS
 # drive_stat = 8  | PUT BALL IN SILO
+# drive_stat = 9  | BALL IN SILO, ROTATE AND TURN BACK
 
 while True:
     us_data = ''
@@ -449,7 +475,7 @@ while True:
                 drive(0,0,0,0)
                 right_move = 1
         
-        if data[4] != -1 and front_left_us < 120 and front_right_us < 120 and abs(front_left_us-front_right_us) >= 3:
+        if data[4] != -1 and (front_left_us < 120 or front_right_us < 120) and abs(front_left_us-front_right_us) >= 3:
             adjust = 1
             if(front_left_us > front_right_us):
 #                 print("Clockwise 1")
@@ -512,17 +538,31 @@ while True:
 #                         print("Front Right: ", front_right_us)
                         us_data = us_data + " | front_right_us: " + str(front_right_us)
                         time.sleep_ms(1)
-                    drive_stat = 0
+                    drive_stat = 8
                     wm2 = 0
                     wm4 = 0
                     wm1 = 0
                     wm3 = 0
+                    message = "{}".format(drive_stat)
+            #         print(message)
+                    us_data = us_data + " | message: "+str(message)
+                    message_bytes = message.encode('utf-8')
+                    uart.write(message_bytes)
+                    drive_stat = 0
 #                     print("JOB DONE")
                     us_data = us_data + " | JOB DONE"
 #                 if wm1 == 0 and wm3 == 0 and front_left_us > 50 and front_left_us > 50:
 #                     wm2 = -3500
 #                     wm4 = 3500
-                elif front_left_us < 50 or front_right_us < 50:
+                
+                elif front_left_us < 30 and front_right_us < 30:
+#                       print("Aligning")
+                    us_data = us_data + " | Moving Back for Aligning" 
+                    wm1 = 0
+                    wm2 =2201
+                    wm3 = 0
+                    wm4 = -2201
+                elif front_left_us < 80 or front_right_us < 80:
 #                     print("Aligning")
                     us_data = us_data + " | Aligning"
                     if wm1 < 0:
@@ -554,7 +594,7 @@ while True:
     if data and drive_stat == 1:
 #         print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4])) 
         us_data = us_data + " | Received data: 0: "+str(data[0])+", 1: "+str(data[1])+", 2: "+str(data[2])+", 3: "+str(data[3])+", 4: "+str(data[4])
-        if -13 <= data[0] <= -7 and data[1] >= -43: # -15 -5
+        if -13 <= data[0] <= -7 and data[1] >= -60: # -15 -5
             data[0] = 0
             data[1] = 0
             data[2] = 0
@@ -564,15 +604,15 @@ while True:
 #             print("Drive stat 2")
             us_data = us_data + " | Drive stat 2"
         elif data[0] < -13 and data[1] >= -70:  # ANTICLOCK
-            data[0] = -8 # 17
-            data[1] = 8
-            data[2] = -8
-            data[3] = 8
+            data[0] = -6 # 17
+            data[1] = 6
+            data[2] = -6
+            data[3] = 6
         elif -7 < data[0] and data[1] >= -70:  # CLOCK
-            data[0] = 8
-            data[1] = -8
-            data[2] = 8
-            data[3] = -8
+            data[0] = 6
+            data[1] = -6
+            data[2] = 6
+            data[3] = -6
             
         wm1 = int(map(data[0], -255, 255, -62000, 62000))
         wm2 = int(map(data[1], -255, 255, -62000, 62000))
@@ -608,7 +648,7 @@ while True:
         # go back
         
         drive(0,0,0,0)
-        time.sleep(0.1)
+        time.sleep(0.05)
         drive(0, 8000,0, -8000)
         time.sleep(0.4)
         
@@ -625,8 +665,8 @@ while True:
         
         # go front
         
-        drive(0, -8000,0, 8000)
-        time.sleep(1.15)
+        drive(0, -12000,0, 12000)
+        time.sleep(1.2)
         drive(0,0,0,0)
         
         # feed the ball
@@ -641,20 +681,50 @@ while True:
         message_bytes = message.encode('utf-8')
         uart.write(message_bytes)
         
+        # go back
+        
+        drive(0,0,0,0)
+        time.sleep(2)
+        drive(0, 8000,0, -8000)
+        time.sleep(0.4)
+        
         drive_stat = 0
     
     if(drive_stat == 5):  # go back for easier feed
-        drive(0, 5000,0, -5000)
+        drive(0, 15000,0, -15000)
         time.sleep(0.5)
         drive(0,0,0,0) 
-        drive_stat = 0
+        drive_stat = 1
+        message = "{}".format(drive_stat)
+#         print(message)
+        us_data = us_data + " | message: "+str(message)
+        message_bytes = message.encode('utf-8')
+        uart.write(message_bytes)
+        
+    if(drive_stat == 9):  # go back for easier feed
+        #         print("Go back and Rotate - BALL search")
+        us_data = us_data + " | Go back and Rotate - BALL search"
+        drive(0, 20000,0, -20000)
+        time.sleep(0.25)
+        us_data = us_data + " | Anticlockwise for 0.8 seconds 3"
+        drive(-medium,medium,-medium,medium)
+        time.sleep_ms(800)
+        drive_stat = 1
+        message = f"{drive_stat}\n"
+    
+        # Send the message over USB CDC (print to USB)
+        print(message, end='')  
         
     if(drive_stat == 6):
 #         print("Go back for ZED - SILO view")
         us_data = us_data + " | Go back for ZED - SILO view"
-        drive(0, 5000,0, -5000)
-        time.sleep(2)
-        drive_stat = 0
+        drive(0, 25000,0, -25000)
+        time.sleep(0.25)
+        drive_stat = 7
+        message = f"{drive_stat}\n"
+    
+        # Send the message over USB CDC (print to USB)
+        print(message, end='')   
         
         
     if us_data == '':
@@ -663,3 +733,11 @@ while True:
         save_to_csv(us_data)    
 
 # ----------------- END -----------------   
+
+
+
+
+
+
+
+

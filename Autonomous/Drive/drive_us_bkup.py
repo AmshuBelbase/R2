@@ -109,7 +109,7 @@ print("Warming Up")
 drive(0,0,0,0)
 
 i = 1
-time_s = 1
+time_s = 3
 led_pin.value(0)
 while i<=time_s:
     i=i+1
@@ -120,11 +120,10 @@ while i<=time_s:
 led_pin.value(1)
 
 print("Started")
-
-slow_us = 4500
-medium_us = 9000
-fast_us = 24000
-super_fast_us = 36000
+slow = 4500
+medium = 9000
+fast = 24000
+super_fast = 36000
 d = 18000
 
 garbage_c = 0
@@ -154,44 +153,44 @@ while True:
         time.sleep_ms(1)       
         
         if(front_left_us <=140 and front_right_us <= 140):
-            d = medium_us
+            d = medium
         else:
-            d = fast_us
+            d = fast
             
         if(front_left_us <= 55 and front_right_us <= 55):
             if(abs(front_left_us-front_right_us) >= 3):
                 if(front_left_us > front_right_us):
                     print("Clockwise 1")
-                    drive(slow_us,-slow_us,slow_us,-slow_us)
+                    drive(slow,-slow,slow,-slow)
                 else:
                     print("Anti Clockwise 1")
-                    drive(-slow_us,slow_us,-slow_us,slow_us)
+                    drive(-slow,slow,-slow,slow)
             elif(front_left_us <= 10 and front_right_us <= 10): 
                 print("Back")
-                drive(0,slow_us,0,-slow_us)
-            elif(front_left_us <= 17 and front_right_us <= 17): #and right_front_us > 160
+                drive(0,slow,0,-slow)
+            elif(front_left_us <= 20 and front_right_us <= 20): #and right_front_us > 160
                 print("Move Right 1")
-                drive(fast_us,0,-fast_us,0)
+                drive(fast,0,-fast,0)
             else:
                 print("Front")
-                drive(0,-slow_us,0,slow_us)
+                drive(0,-slow,0,slow)
         elif(left_front_us <= 65 and left_back_us <= 65):
             if(abs(left_front_us-left_back_us) >= 4):
                 if(left_back_us > left_front_us):
                     print("Clockwise 2")
-                    drive(slow_us,-slow_us,slow_us,-slow_us)
+                    drive(slow,-slow,slow,-slow)
                 else:
                     print("Anti Clockwise 2")
-                    drive(-slow_us,slow_us,-slow_us,slow_us)
+                    drive(-slow,slow,-slow,slow)
             elif(left_front_us <= 10 and left_back_us <= 10):
                 print("Diagonal Front Right 2")
-                drive(medium_us,-medium_us,-medium_us,medium_us)
+                drive(slow,-slow,-slow,slow)
             elif(left_front_us <= 27 and left_back_us <= 27):
                 print("Straight 2")
                 drive(0,-d,0,d)
             else:
                 print("Diagonal Front Left 2")
-                drive(-medium_us,-medium_us,medium_us,medium_us)
+                drive(-slow,-slow,slow,slow)
 #         elif(right_front_us >=118 and right_front_us <=128):
 #             print("Stop 0")
 #             drive(0,0,0,0)
@@ -199,10 +198,10 @@ while True:
 #             print("forward_c:",forward_c)
 #             if(forward_c >= 2):
 #                 print("Moving straight for 2.5 seconds 3")
-#                 drive(0,-super_fast_us,0,super_fast_us)
+#                 drive(0,-super_fast,0,super_fast)
 #                 time.sleep_ms(1750)
 #                 print("Anticlockwise for 1 seconds 3")
-#                 drive(-medium_us,medium_us,-medium_us,medium_us)
+#                 drive(-medium,medium,-medium,medium)
 #                 time.sleep_ms(500)
 #                 print("Stop 3")
 #                 drive(0,0,0,0)
@@ -210,13 +209,13 @@ while True:
 #                 break 
 #         elif(right_front_us <128):
 #             print("Move Left 2")
-#             drive(-slow_us,0,slow_us,0)
+#             drive(-slow,0,slow,0)
 #         elif(right_front_us <= 160):
 #             print("Moving right 5")
-#             drive(slow_us,0,-slow_us,0)
+#             drive(slow,0,-slow,0)
         elif(front_right_us > 45 and front_left_us < 45):
             print("Moving right 6")
-            drive(slow_us,0,-slow_us,0)
+            drive(slow,0,-slow,0)
         elif(front_left_us >= 45 and front_right_us >= 45):
             print("Stop 3") 
             drive(0,0,0,0)
@@ -224,15 +223,15 @@ while True:
             print("forward_c:",forward_c)
             if(forward_c >= 5):
                 print("Moving right for 0.3 seconds 3")
-                drive(medium_us,0,-medium_us,0)
+                drive(medium,0,-medium,0)
                 time.sleep(0.3)
                 print("Moving straight for 2 seconds 3")
-                drive(0,-super_fast_us,0,super_fast_us)
+                drive(0,-super_fast,0,super_fast)
                 time.sleep(2)
                 print("Anticlockwise for 0.8 seconds 3")
-                drive(-medium_us,medium_us,-medium_us,medium_us)
+                drive(-medium,medium,-medium,medium)
                 time.sleep_ms(800) 
-                drive(0,-medium_us,0,medium_us)
+                drive(0,-medium,0,medium)
                 time.sleep(2)
                 print("Stop 3") 
                 drive(0,0,0,0)

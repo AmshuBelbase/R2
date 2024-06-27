@@ -38,21 +38,26 @@ stepper_motor = StepperMotor(elevator_step1_pin, elevator_dir1_pin)
 
 #ultrasonics
 
-# left_trig = Pin(20, Pin.OUT)   
-# left_echo = Pin(21, Pin.IN)
-# 
-# right_trig = Pin(18, Pin.OUT) 
-# right_echo = Pin(19, Pin.IN)
-
 roller_trig = Pin(22, Pin.OUT)
 roller_echo = Pin(26, Pin.IN)
 
 elevator_trig = Pin(27, Pin.OUT)
 elevator_echo = Pin(28, Pin.IN)
 
+# left_trig = Pin(20, Pin.OUT)   
+# left_echo = Pin(21, Pin.IN)
+# 
+# right_trig = Pin(18, Pin.OUT) 
+# right_echo = Pin(19, Pin.IN)
 
 
 # ----------------- INITIAL POSITIONS -----------------
+
+drive_stat = 30
+message = "{}".format(drive_stat)
+print("Sent: ",message)
+message_bytes = message.encode('utf-8')
+uart.write(message_bytes)
 
 gate_servo1.goto(700) 
 gate_servo2.goto(300)
@@ -64,7 +69,7 @@ roller_pin1.value(0)
 roller_pin2.value(0)
  
 x_deg = roller_servo1.get_position() 
-roller = 0
+roller = 700
 while x_deg != roller:
     if(x_deg > roller):
         x_deg = x_deg -1
@@ -74,32 +79,24 @@ while x_deg != roller:
     roller_servo1.goto(x_deg) 
     roller_servo2.goto(y_deg)
     time.sleep_us(1000)
-    
-time.sleep(3)
 
-stepper_motor.stepper_up(200)
-time.sleep(0.25)
-stepper_motor.stepper_down(200)
+stepper_motor.stepper_up(2150)
+time.sleep(0.1)
+stepper_motor.stepper_down(2150)
 push_servo1.goto(0) 
 push_servo2.goto(1000) 
 
 roller_pin1.value(1)
 roller_pin2.value(0)
 
-time.sleep_ms(1000)
-
+time.sleep_ms(300)
 
 roller_pin1.value(0)
 roller_pin2.value(0)        
 
-
-# roller_pin1.value(0)
-# roller_pin2.value(0)
-
 # ----------------- GLOBAL AVRIABLES -----------------
 
-drive_stat = 0
-
+drive_stat = 3
 
 # ----------------- USER DEFINED FUNCTIONS -----------------
 
@@ -130,7 +127,15 @@ def measure_distance(trigger, echo):
     return distance
 
 
+
+
 # ----------------- MAIN CODE -----------------
+
+led_pin = Pin(25, Pin.OUT)
+led_pin.value(1)
+
+
+# time.sleep(1) 
 
 while True:
     if uart.any(): 
@@ -180,7 +185,11 @@ while True:
         stepper_motor.stepper_down(2150)
         push_servo1.goto(700) 
         push_servo2.goto(300)
-        drive_stat = 0
+        drive_stat = 9
+        message = "{}".format(drive_stat)
+        print("Sent: ",message)
+        message_bytes = message.encode('utf-8')
+        uart.write(message_bytes)
     if(drive_stat == 3 or drive_stat == 4):
         
         if drive_stat == 3: # if red or blue ball then feed
@@ -191,7 +200,7 @@ while True:
             gate_servo2.goto(300)
             
         roller_pin1.value(1)
-        roller_pin2.value(0)        
+        roller_pin2.value(0)
         
         print("At 150")
         x_deg = 150    # 150
@@ -199,7 +208,7 @@ while True:
         roller_servo1.goto(x_deg) 
         roller_servo2.goto(y_deg)
 
-        time.sleep(2)  
+        time.sleep(1)  
 
         print("At 350")
         x_deg = 350    # 150
@@ -207,74 +216,61 @@ while True:
         roller_servo1.goto(x_deg) 
         roller_servo2.goto(y_deg)
 
-        time.sleep(2)
-
-        print("At 500")
-        x_deg = 500    # 150
-        y_deg = 1024 - x_deg
-        roller_servo1.goto(x_deg) 
-        roller_servo2.goto(y_deg)
-
-        time.sleep(2)
-
-
-        print("At 1000")
-        x_deg = 1000    # 150
-        y_deg = 1024 - x_deg
-        roller_servo1.goto(x_deg) 
-        roller_servo2.goto(y_deg)
-        time.sleep(0.25)
-        
-        
-        
-#         x_deg = roller_servo1.get_position() 
-#         roller = 300
-#         while x_deg != roller:
-#             if(x_deg > roller):
-#                 x_deg = x_deg -1
-#             else:
-#                 x_deg = x_deg +1 
-#             y_deg = 1024 - x_deg
-#             roller_servo1.goto(x_deg) 
-#             roller_servo2.goto(y_deg)
-#             time.sleep_us(1000)
-#         
-#         time.sleep(1)        
-#         
-#         x_deg = 500    # 150
-#         y_deg = 1024 - x_deg
-#         roller_servo1.goto(x_deg) 
-#         roller_servo2.goto(y_deg)
-# 
-#         time.sleep(2.5)
-        
-#         message = "{}".format(5)
-#         print("Sent: ",message)
-#         message_bytes = message.encode('utf-8')
-#         uart.write(message_bytes)
-        
-#         roller_pin1.value(0)
-#         roller_pin2.value(1)
-#         time.sleep(0.2) 
-        
-        x_deg = roller_servo1.get_position() 
-        roller = 500
-        while x_deg != roller:
-            if(x_deg > roller):
-                x_deg = x_deg -1
+        c = 0
+        start_time = utime.ticks_ms()
+        while utime.ticks_diff(utime.ticks_ms(), start_time) < 2500:  # 3000 ms = 3 seconds
+            roller_us = measure_distance(roller_trig, roller_echo)
+            print("roller_us: ", roller_us)
+            
+            if roller_us < 10:
+                start_time = utime.ticks_ms()
+                c += 1
             else:
-                x_deg = x_deg +1 
+                c = 0
+            
+            time.sleep_ms(10)
+
+            # Check if c has been incremented 60 times (meaning elevator < 4 for 60 consecutive iterations)
+            if c > 40:
+                break
+
+        # If loop terminated due to timeout
+        if utime.ticks_diff(utime.ticks_ms(), start_time) >= 2500:
+            print("Loop terminated due to timeout.")
+            roller_pin1.value(0)
+            roller_pin2.value(1)
+            print("At 0")
+            x_deg = 0    # 150
             y_deg = 1024 - x_deg
             roller_servo1.goto(x_deg) 
             roller_servo2.goto(y_deg)
-            time.sleep_us(1000)
+
+#             time.sleep(0.5)
+            
+            drive_stat = 4  
+        else:
+            print("At 500")
+            x_deg = 500    # 150
+            y_deg = 1024 - x_deg
+            roller_servo1.goto(x_deg) 
+            roller_servo2.goto(y_deg)
+
+            time.sleep(0.5)
+
+
+            print("At 1000")
+            x_deg = 1000    # 150
+            y_deg = 1024 - x_deg
+            roller_servo1.goto(x_deg) 
+            roller_servo2.goto(y_deg)
         
         if drive_stat == 4: # if purple ball then again start searching
-            drive_stat = 1
+            drive_stat = 5
             message = "{}".format(drive_stat)
             print("Sent: ",message)
             message_bytes = message.encode('utf-8')
             uart.write(message_bytes)
+            time.sleep(1)
         else:                
             c = 0
             start_time = utime.ticks_ms()
@@ -282,22 +278,22 @@ while True:
                 elevator = measure_distance(elevator_trig, elevator_echo)
                 print("elevator: ", elevator)
                 
-                if elevator < 4:
+                if elevator < 10:
                     start_time = utime.ticks_ms()
                     c += 1
                 else:
                     c = 0
                 
-                time.sleep_ms(10)
+                time.sleep_ms(5)
 
                 # Check if c has been incremented 60 times (meaning elevator < 4 for 60 consecutive iterations)
-                if c > 60:
+                if c > 40:
                     break
 
             # If loop terminated due to timeout
-            if utime.ticks_diff(utime.ticks_ms(), start_time) >= 3000:
+            if utime.ticks_diff(utime.ticks_ms(), start_time) >= 4500:
                 print("Loop terminated due to timeout.")
-                drive_stat = 1 
+                drive_stat = 5
                 message = "{}".format(drive_stat)
                 print("Sent: ",message)
                 message_bytes = message.encode('utf-8')
@@ -316,6 +312,12 @@ while True:
                 message_bytes = message.encode('utf-8')
                 uart.write(message_bytes)
                 
+                print("At 500")
+                x_deg = 500    # 150
+                y_deg = 1024 - x_deg
+                roller_servo1.goto(x_deg) 
+                roller_servo2.goto(y_deg)
+                
 #                 time.sleep(1)
 #                 stepper_motor.stepper_up(900)
 #                 push_servo1.goto(0) 
@@ -326,3 +328,8 @@ while True:
 #                 push_servo2.goto(300)
         
          
+
+
+
+
+
