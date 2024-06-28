@@ -317,7 +317,8 @@ while True:
                 y_deg = 1024 - x_deg
                 roller_servo1.goto(x_deg) 
                 roller_servo2.goto(y_deg)
-                
+        roller_pin1.value(0)
+        roller_pin2.value(0)
 #                 time.sleep(1)
 #                 stepper_motor.stepper_up(900)
 #                 push_servo1.goto(0) 

@@ -478,7 +478,7 @@ while True:
                 drive(0,0,0,0)
                 right_move = 1
         
-        if data[4] != -1 and (front_left_us < 120 or front_right_us < 120) and abs(front_left_us-front_right_us) >= 3:
+        if data[4] != -1 and data[4] != -2 and (front_left_us < 120 or front_right_us < 120) and abs(front_left_us-front_right_us) >= 3:
             adjust = 1
             if(front_left_us > front_right_us):
 #                 print("Clockwise 1")
@@ -502,11 +502,11 @@ while True:
             us_data = us_data + " | Before Mapping: W1: "+str(wm1)+", W2: "+str(wm2)+", W3: "+str(wm3)+", W4: "+str(wm4)
                 
             if data[4] == -3:
-                if wm1 == 0 and wm3 == 0 and front_left_us <= 80 and front_left_us <= 80:
+                if wm1 == 0 and wm3 == 0 and front_left_us <= 110 and front_left_us <= 110:
 #                 if wm1 == 0 and wm3 == 0 and front_left_us < 120 and front_right_us < 120:
 #                     print("Centered")
                     us_data = us_data + " | Centered"
-                    while front_left_us > 8 and front_left_us > 8:
+                    while front_left_us > 12 and front_left_us > 12:
 #                         print("Moving near Silo")
                         us_data = us_data + " | Moving near Silo"
                         buffer = ''  
@@ -558,22 +558,22 @@ while True:
 #                     wm2 = -3500
 #                     wm4 = 3500
                 
-                elif front_left_us < 30 and front_right_us < 30:
+                elif front_left_us < 35 and front_right_us < 35:
 #                       print("Aligning")
                     us_data = us_data + " | Moving Back for Aligning" 
                     wm1 = 0
                     wm2 =2201
                     wm3 = 0
                     wm4 = -2201
-                elif front_left_us < 80 or front_right_us < 80:
+                elif front_left_us < 110 or front_right_us < 110:
 #                     print("Aligning")
                     us_data = us_data + " | Aligning"
                     if wm1 < 0:
-                        wm1 = -2201
-                        wm3 = 2201
+                        wm1 = -2301
+                        wm3 = 2301
                     else:
-                        wm1 = 2201
-                        wm3 = -2201
+                        wm1 = 2301
+                        wm3 = -2301
                     wm2 = 0
                     wm4 = 0
             
@@ -597,7 +597,7 @@ while True:
     if data and drive_stat == 1:
 #         print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4])) 
         us_data = us_data + " | Received data: 0: "+str(data[0])+", 1: "+str(data[1])+", 2: "+str(data[2])+", 3: "+str(data[3])+", 4: "+str(data[4])
-        if -13 <= data[0] <= -7 and data[1] >= -50: # -15 -5
+        if -11 <= data[0] <= -5 and data[1] >= -45: # -15 -5 
             data[0] = 0
             data[1] = 0
             data[2] = 0
@@ -606,12 +606,12 @@ while True:
             det_c = data[4] # class of detected object
 #             print("Drive stat 2")
             us_data = us_data + " | Drive stat 2"
-        elif data[0] < -13 and data[1] >= -70:  # ANTICLOCK
+        elif data[0] < -11 and data[1] >= -70:  # ANTICLOCK
             data[0] = -6 # 17
             data[1] = 6
             data[2] = -6
             data[3] = 6
-        elif -7 < data[0] and data[1] >= -70:  # CLOCK
+        elif -5 < data[0] and data[1] >= -70:  # CLOCK
             data[0] = 6
             data[1] = -6
             data[2] = 6
@@ -662,14 +662,14 @@ while True:
         us_data = us_data + " | message: "+str(message)             
         message_bytes = message.encode('utf-8')
         uart.write(message_bytes)
-        time.sleep(0.25)
+        time.sleep(0.1)
         drive(0,0,0,0)
         time.sleep(0.1)
         
         # go front
         
         drive(0, -12000,0, 12000)
-        time.sleep(1.2)
+        time.sleep(1)
         drive(0,0,0,0)
         
         # feed the ball
@@ -687,7 +687,7 @@ while True:
         # go back
         
         drive(0,0,0,0)
-        time.sleep(2)
+        time.sleep(1.5)
         drive(0, 8000,0, -8000)
         time.sleep(0.4)
         
@@ -736,6 +736,12 @@ while True:
         save_to_csv(us_data)    
 
 # ----------------- END -----------------   
+
+
+
+
+
+
 
 
 
