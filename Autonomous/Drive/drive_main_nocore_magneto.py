@@ -158,7 +158,9 @@ count=0
 range_min = 265
 range_max = 275
 
-
+rotate_speed = 5500
+rot_range_min = 90 
+rot_range_max = 270
 # ----------------- INITIAL POSITIONS -----------------
 
 save_to_csv(" ------------------- NEW ATTEMPT -------------------")
@@ -456,7 +458,31 @@ while True:
         us_data = us_data + " | Received data: 0: "+str(data[0])+", 1: "+str(data[1])+", 2: "+str(data[2])+", 3: "+str(data[3])+", 4: "+str(data[4])
 
         if data[4] == -1:
+            while True:
+                count_deg = 0
+                b_deg = 0
+                x, y, z = sensor.read()
+                deg = sensor.get_degree(x, y, z) 
+                if range_min <= deg <= range_max :
+                    drive(0,0,0,0)
+                    while count_deg < 10 and b_deg == 0:
+                        x, y, z = sensor.read()
+                        deg = sensor.get_degree(x, y, z)
+                        if range_min <= deg <= range_max :
+                            count_deg +=1 
+                        else:
+                            b_deg = 1
+                else: 
+                    if rot_range_min <= deg < rot_range_max:
+                        drive(rotate_speed,-rotate_speed,rotate_speed,-rotate_speed)
+                    else:
+                        drive(-rotate_speed,rotate_speed,-rotate_speed,rotate_speed)
+                
+                if not count_deg < 10:
+                    break
+
             drive(0, -6000,0, 6000)
+            time.sleep(0.5)
         else:
             wm1 = int(map(data[0], -255, 255, -62000, 62000))
             wm2 = int(map(data[1], -255, 255, -62000, 62000))
@@ -650,8 +676,8 @@ while True:
         
         drive(0,0,0,0)
         time.sleep(0.05)
-        drive(0, 8000,0, -8000)
-        time.sleep(0.4)
+        drive(0, 10000,0, -10000)
+        time.sleep(0.25)
         
         # open the roller
         
@@ -666,8 +692,19 @@ while True:
         
         # go front
         
-        drive(0, -12000,0, 12000)
-        time.sleep(1)
+        if det_c > 230:
+            drive(0, -10000,0, 10000)
+            time.sleep(0.5)
+        elif det_c > 200:
+            drive(0, -10000,0, 10000)
+            time.sleep(0.65)
+        elif det_c > 170:
+            drive(0, -10000,0, 10000)
+            time.sleep(0.75)
+        else:
+            drive(0, -12000,0, 12000)
+            time.sleep(0.75)
+            
         drive(0,0,0,0)
         
         # feed the ball
@@ -709,7 +746,7 @@ while True:
         time.sleep(0.25)
         us_data = us_data + " | Anticlockwise for 0.8 seconds 3"
         drive(-medium,medium,-medium,medium)
-        time.sleep_ms(800)
+        time.sleep_ms(1300)
         drive_stat = 1
         message = f"{drive_stat}\n"
     
@@ -721,18 +758,59 @@ while True:
         us_data = us_data + " | Go back for ZED - SILO view"
         drive(0, 30000,0, -30000)
         time.sleep(0.2)
+        save_to_csv(us_data)
+        us_data = ''
         
-        drive_stat = 7
         #align to silo
         
-        x, y, z = sensor.read()
-        deg = sensor.get_degree(x, y, z)
-        while not range_min <= deg <= range_max:
-            rotate_speed = 5500
-            drive(-slow_us,slow_us,-slow_us,slow_us)
+#         x, y, z = sensor.read()
+#         deg = sensor.get_degree(x, y, z)
+#         count_deg = 0
+#         while not range_min <= deg <= range_max:
+#             rotate_speed = 5500
+#             drive(-slow_us,slow_us,-slow_us,slow_us)
+#             x, y, z = sensor.read()
+#             deg = sensor.get_degree(x, y, z)
+#             count_deg +=1
+
+
+        while True:
+            count_deg = 0
+            b_deg = 0
             x, y, z = sensor.read()
-            deg = sensor.get_degree(x, y, z)
+            deg = sensor.get_degree(x, y, z) 
+            if range_min <= deg <= range_max :
+                drive(0,0,0,0)
+                while count_deg < 10 and b_deg == 0:
+                    x, y, z = sensor.read()
+                    deg = sensor.get_degree(x, y, z)
+                    if range_min <= deg <= range_max :
+                        count_deg +=1 
+                    else:
+                        b_deg = 1
+            else: 
+                if rot_range_min <= deg < rot_range_max:
+                    drive(rotate_speed,-rotate_speed,rotate_speed,-rotate_speed)
+                else:
+                    drive(-rotate_speed,rotate_speed,-rotate_speed,rotate_speed)
             
+            if not count_deg < 10:
+                break
+        
+        drive_stat = 2
+        message = f"{drive_stat}\n" 
+        print(message, end='')
+        us_data = us_data + " | Sent to stop"
+        save_to_csv(us_data)
+        us_data = ''
+        drive(0, -30000,0, 30000)
+        time.sleep(1.5)
+        us_data = us_data + " | Aligned magnetometer"
+        drive(0,0,0,0)
+        save_to_csv(us_data)
+        us_data = ''
+        
+        drive_stat = 7
         message = f"{drive_stat}\n"
 #         drive(0, -6000,0, 6000)
         # Send the message over USB CDC (print to USB)
@@ -745,6 +823,11 @@ while True:
         save_to_csv(us_data)    
 
 # ----------------- END -----------------   
+
+
+
+
+
 
 
 

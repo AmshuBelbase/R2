@@ -77,17 +77,14 @@ while range_max < 360:
         c = 0
         b = 0
         x, y, z = sensor.read()
-        deg = sensor.get_degree(x, y, z)
-#         print("deg: ", deg)
+        deg = sensor.get_degree(x, y, z) 
         if range_min <= deg <= range_max :
             drive(0,0,0,0)
             while c < 10 and b == 0:
                 x, y, z = sensor.read()
                 deg = sensor.get_degree(x, y, z)
-                print("deg: ", deg)
                 if range_min <= deg <= range_max :
-                    c +=1
-                    print("count: ", c)
+                    c +=1 
                 else:
                     b = 1
         else: 
@@ -96,6 +93,7 @@ while range_max < 360:
         
         if not c < 10:
             break
+        
     time.sleep(5)
     range_min += 10
     range_max += 10

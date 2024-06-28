@@ -182,14 +182,14 @@ while True:
         push_servo1.goto(0) 
         push_servo2.goto(1000)
         time.sleep(1)
-        stepper_motor.stepper_down(2150)
-        push_servo1.goto(700) 
-        push_servo2.goto(300)
         drive_stat = 9
         message = "{}".format(drive_stat)
         print("Sent: ",message)
         message_bytes = message.encode('utf-8')
         uart.write(message_bytes)
+        stepper_motor.stepper_down(2150)
+        push_servo1.goto(700) 
+        push_servo2.goto(300)
     if(drive_stat == 3 or drive_stat == 4):
         
         if drive_stat == 3: # if red or blue ball then feed
