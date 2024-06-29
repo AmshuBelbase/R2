@@ -456,8 +456,18 @@ while True:
     if data and drive_stat == 7:
 #         print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4]))
         us_data = us_data + " | Received data: 0: "+str(data[0])+", 1: "+str(data[1])+", 2: "+str(data[2])+", 3: "+str(data[3])+", 4: "+str(data[4])
-
-        if data[4] == -1:
+        
+        front_left_us = measure_distance(front_left_trig, front_left_echo) 
+#         print("Front Left: ", front_left_us)
+        us_data = us_data + " | front_left_us: " + str(front_left_us)
+        time.sleep_ms(1) 
+        
+        front_right_us = measure_distance(front_right_trig, front_right_echo)
+#         print("Front Right: ", front_right_us)
+        us_data = us_data + " | front_right_us: " + str(front_right_us)
+        time.sleep_ms(1)
+        
+        if data[4] == -1: 
             while True:
                 count_deg = 0
                 b_deg = 0
@@ -491,16 +501,6 @@ while True:
             
             adjust = 0
             # | -1 : No Detection | -3 : Near | -4 : Far | -5 : Aligned
-             
-            front_left_us = measure_distance(front_left_trig, front_left_echo) 
-    #         print("Front Left: ", front_left_us)
-            us_data = us_data + " | front_left_us: " + str(front_left_us)
-            time.sleep_ms(1) 
-            
-            front_right_us = measure_distance(front_right_trig, front_right_echo)
-    #         print("Front Right: ", front_right_us)
-            us_data = us_data + " | front_right_us: " + str(front_right_us)
-            time.sleep_ms(1)
             
             if data[4] != -1 and (front_left_us < 120 or front_right_us < 120) and abs(front_left_us-front_right_us) >= 3:
                 adjust = 1
@@ -526,7 +526,7 @@ while True:
                 us_data = us_data + " | Before Mapping: W1: "+str(wm1)+", W2: "+str(wm2)+", W3: "+str(wm3)+", W4: "+str(wm4)
                     
                 if data[4] == -3:
-                    if wm1 == 0 and wm3 == 0 and front_left_us <= 110 and front_right_us <= 110:
+                    if wm1 == 0 and wm3 == 0 and front_left_us <= 80 and front_right_us <= 80:
     #                 if wm1 == 0 and wm3 == 0 and front_left_us < 120 and front_right_us < 120:
     #                     print("Centered")
                         us_data = us_data + " | Centered"
@@ -586,18 +586,18 @@ while True:
     #                       print("Aligning")
                         us_data = us_data + " | Moving Back for Aligning" 
                         wm1 = 0
-                        wm2 =2201
+                        wm2 =2701
                         wm3 = 0
-                        wm4 = -2201
+                        wm4 = -2701
                     elif front_left_us < 110 or front_right_us < 110:
     #                     print("Aligning")
                         us_data = us_data + " | Aligning"
                         if wm1 < 0:
-                            wm1 = -2301
-                            wm3 = 2301
+                            wm1 = -2401
+                            wm3 = 2401
                         else:
-                            wm1 = 2301
-                            wm3 = -2301
+                            wm1 = 2401
+                            wm3 = -2401
                         wm2 = 0
                         wm4 = 0
                 
@@ -704,6 +704,19 @@ while True:
         else:
             drive(0, -12000,0, 12000)
             time.sleep(0.75)
+
+#         if det_c > 230:
+#             drive(0, -10000,0, 10000)
+#             time.sleep(0.2)
+#         elif det_c > 200:
+#             drive(0, -10000,0, 10000)
+#             time.sleep(0.4)
+#         elif det_c > 170:
+#             drive(0, -10000,0, 10000)
+#             time.sleep(0.6)
+#         else:
+#             drive(0, -12000,0, 12000)
+#             time.sleep(0.8)
             
         drive(0,0,0,0)
         
@@ -743,7 +756,7 @@ while True:
         #         print("Go back and Rotate - BALL search")
         us_data = us_data + " | Go back and Rotate - BALL search"
         drive(0, 20000,0, -20000)
-        time.sleep(0.25)
+        time.sleep(0.75)
         us_data = us_data + " | Anticlockwise for 0.8 seconds 3"
         drive(-medium,medium,-medium,medium)
         time.sleep_ms(1300)
@@ -823,6 +836,7 @@ while True:
         save_to_csv(us_data)    
 
 # ----------------- END -----------------   
+
 
 
 

@@ -69,7 +69,7 @@ roller_pin1.value(0)
 roller_pin2.value(0)
  
 x_deg = roller_servo1.get_position() 
-roller = 700
+roller = 600
 while x_deg != roller:
     if(x_deg > roller):
         x_deg = x_deg -1
@@ -80,9 +80,9 @@ while x_deg != roller:
     roller_servo2.goto(y_deg)
     time.sleep_us(1000)
 
-stepper_motor.stepper_up(2150)
+# stepper_motor.stepper_up(2150)
 time.sleep(0.1)
-stepper_motor.stepper_down(2150)
+# stepper_motor.stepper_down(2150)
 push_servo1.goto(0) 
 push_servo2.goto(1000) 
 
@@ -96,7 +96,7 @@ roller_pin2.value(0)
 
 # ----------------- GLOBAL AVRIABLES -----------------
 
-drive_stat = 3
+drive_stat = 4
 
 # ----------------- USER DEFINED FUNCTIONS -----------------
 
@@ -153,7 +153,7 @@ while True:
         gate_servo1.goto(100) 
         gate_servo2.goto(900)
         x_deg = roller_servo1.get_position() 
-        roller = 500
+        roller = 300
         while x_deg != roller:
             if(x_deg > roller):
                 x_deg = x_deg -1
@@ -190,6 +190,7 @@ while True:
         stepper_motor.stepper_down(2150)
         push_servo1.goto(700) 
         push_servo2.goto(300)
+        drive_stat = 1
     if(drive_stat == 3 or drive_stat == 4):
         
         if drive_stat == 3: # if red or blue ball then feed
@@ -270,7 +271,9 @@ while True:
             print("Sent: ",message)
             message_bytes = message.encode('utf-8')
             uart.write(message_bytes)
-            time.sleep(1)
+            drive_stat = 1
+            time.sleep(1.5)
+            
         else:                
             c = 0
             start_time = utime.ticks_ms()
@@ -298,6 +301,7 @@ while True:
                 print("Sent: ",message)
                 message_bytes = message.encode('utf-8')
                 uart.write(message_bytes)
+                drive_stat = 5
             else:
                 gate_servo1.goto(700) 
                 gate_servo2.goto(300)
