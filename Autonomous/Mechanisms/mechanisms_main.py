@@ -9,20 +9,20 @@ import utime
 uart = UART(1, baudrate=115200, tx=Pin(4), rx=Pin(5))  
 
 # roller servo
-roller_servo_r_pin = 11
+roller_servo_r_pin =3 # 3
 roller_servo_l_pin = 10
 roller_servo1 = Servo(roller_servo_r_pin)
 roller_servo2 = Servo(roller_servo_l_pin)
 
 # gate servo
-gate_servo_r_pin = 7
-gate_servo_l_pin = 6
+gate_servo_r_pin = 7 # 7
+gate_servo_l_pin = 6 # 6
 gate_servo1 = Servo(gate_servo_r_pin)
 gate_servo2 = Servo(gate_servo_l_pin)
 
 # push servo
-push_servo_r_pin = 3
-push_servo_l_pin = 2
+push_servo_r_pin = 2 # 2
+push_servo_l_pin = 11 # 11
 push_servo1 = Servo(push_servo_r_pin)
 push_servo2 = Servo(push_servo_l_pin)
  
@@ -53,6 +53,7 @@ elevator_echo = Pin(28, Pin.IN)
 
 # ----------------- INITIAL POSITIONS -----------------
 
+
 drive_stat = 30
 message = "{}".format(drive_stat)
 print("Sent: ",message)
@@ -61,15 +62,16 @@ uart.write(message_bytes)
 
 gate_servo1.goto(700) 
 gate_servo2.goto(300)
+ 
 
 push_servo1.goto(700) 
 push_servo2.goto(300)
 
-roller_pin1.value(0)
+roller_pin1.value(1)
 roller_pin2.value(0)
  
 x_deg = roller_servo1.get_position() 
-roller = 0
+roller = 600
 while x_deg != roller:
     if(x_deg > roller):
         x_deg = x_deg -1
@@ -79,7 +81,7 @@ while x_deg != roller:
     roller_servo1.goto(x_deg) 
     roller_servo2.goto(y_deg)
     time.sleep_us(1000)
-
+    
 stepper_motor.stepper_up(2150)
 time.sleep(0.1)
 stepper_motor.stepper_down(2150)
@@ -92,7 +94,19 @@ roller_pin2.value(0)
 time.sleep_ms(300)
 
 roller_pin1.value(0)
-roller_pin2.value(0)        
+roller_pin2.value(0)
+
+x_deg = roller_servo1.get_position() 
+roller = 0
+while x_deg != roller:
+    if(x_deg > roller):
+        x_deg = x_deg -1
+    else:
+        x_deg = x_deg +1 
+    y_deg = 1024 - x_deg
+    roller_servo1.goto(x_deg) 
+    roller_servo2.goto(y_deg)
+    time.sleep_us(1000)
 
 # ----------------- GLOBAL AVRIABLES -----------------
 

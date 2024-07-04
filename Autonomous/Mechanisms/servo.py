@@ -1,6 +1,6 @@
-from machine import Pin, PWM
- 
- 
+from machine import Pin, PWM 
+gate_servo_r_pin = 3
+
 class Servo:
     """ A simple class for controlling a 9g servo with the Raspberry Pi  Pico.
  
@@ -73,3 +73,7 @@ class Servo:
         delta = self.maxVal - self.minVal
         position = int(((duty - self.minVal) / delta) * 1024)
         return position
+    
+    
+gate_servo1 = Servo(gate_servo_r_pin)
+gate_servo1.goto(0) 

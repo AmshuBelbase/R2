@@ -14,26 +14,26 @@ from time import sleep
 
 #magnetometer  - 8 sda and 9 scl (mechanisms)
 
-m1_pwm = PWM(Pin(4))
-m1_dir = Pin(14, Pin.OUT)
+m1_pwm = PWM(Pin(20))
+m1_dir = Pin(4, Pin.OUT)
 m2_pwm = PWM(Pin(16))
-m2_dir = Pin(28, Pin.OUT)
+m2_dir = Pin(18, Pin.OUT)
 m3_pwm = PWM(Pin(17))
-m3_dir = Pin(10, Pin.OUT)
-m4_pwm = PWM(Pin(5))
-m4_dir = Pin(6, Pin.OUT) 
+m3_dir = Pin(19, Pin.OUT)
+m4_pwm = PWM(Pin(21))
+m4_dir = Pin(5, Pin.OUT) 
 
 left_back_trig = Pin(2, Pin.OUT) #us1
 left_back_echo = Pin(3, Pin.IN)
 
-left_front_trig = Pin(21, Pin.OUT) #us2
+left_front_trig = Pin(6, Pin.OUT) #us2
 left_front_echo = Pin(7, Pin.IN)
 
-front_left_trig = Pin(18, Pin.OUT) #us3  
+front_left_trig = Pin(10, Pin.OUT) #us3  
 front_left_echo = Pin(11, Pin.IN)
 
-front_right_trig = Pin(20, Pin.OUT) #us4
-front_right_echo = Pin(15, Pin.IN)
+front_right_trig = Pin(28, Pin.OUT) #us4
+front_right_echo = Pin(27, Pin.IN)
 
 # right_front_trig = Pin(19, Pin.OUT) #us5
 # right_front_echo = Pin(27, Pin.IN)
@@ -141,7 +141,7 @@ super_fast = 36000
 very_slow_us = 3500
 slow_us = 4500
 medium_us = 9000
-fast_us = 22000
+fast_us = 21000
 super_fast_us = 36000
 d = 18000
 
@@ -157,7 +157,7 @@ deg = sensor.get_degree(x, y, z)
 
 count=0
 range_min = 265
-range_max = 275
+range_max = 270
 
 rotate_speed = 5500
 rot_range_min = 90 
@@ -408,7 +408,7 @@ ranges_silo = [
     (0,500, 15),
     (0, 1000, 8),
     (0, 2000, 5), 
-    (0, 4000, 2),
+    (0, 4000, 2.5),
     (0, 5000, 1.2) 
 ]
 # ranges = [
@@ -496,7 +496,7 @@ while True:
         time.sleep_ms(1)
         
         if data[4] == -1:
-            if front_left_us >= 120 or front_right_us >= 120:
+            if front_left_us >= 80 or front_right_us >= 80:
                 while True:
                     count_deg = 0
                     b_deg = 0
@@ -523,13 +523,13 @@ while True:
                     if not count_deg < 10:
                         break
             
-            if front_left_us < 25 and front_right_us < 25:
+            if front_left_us <= 20 and front_right_us <= 20:
                 us_data = us_data + " | Too Close Move Far "
                 save_to_csv(us_data)
                 us_data = ''
                 drive(0, 6000,0, -6000)
                 time.sleep(0.5)
-            elif front_left_us < 35 and front_right_us < 35:
+            elif front_left_us <= 35 and front_right_us <= 35:
                 left_front_us = measure_distance(left_front_trig, left_front_echo)   
                 time.sleep_ms(1)
 
@@ -541,14 +541,14 @@ while True:
                     us_data = us_data + " | Left Search "
                     save_to_csv(us_data)
                     us_data = ''
-                    drive(-25000,0,25000,0) 
+                    drive(-15000,0,15000,0) 
                 else:
                     #go right for 2 seconds
                     us_data = us_data + " | Right Search "
                     save_to_csv(us_data)
                     us_data = ''
-                    drive(35000,0,-35000,0)
-                    time.sleep(2)                                     
+                    drive(10000,0,-10000,0)
+                    time.sleep(1.5)                                     
             else:
                 us_data = us_data + " | Forward Search "
                 save_to_csv(us_data)
@@ -564,7 +564,7 @@ while True:
             adjust = 0
             # | -1 : No Detection | -3 : Near | -4 : Far | -5 : Aligned
             
-            if data[4] != -1 and (front_left_us < 120 or front_right_us < 120) and abs(front_left_us-front_right_us) >= 3:
+            if data[4] != -1 and (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 3:
                 adjust = 1
                 if(front_left_us > front_right_us):
     #                 print("Clockwise 1")
@@ -588,7 +588,14 @@ while True:
                 us_data = us_data + " | Before Mapping: W1: "+str(wm1)+", W2: "+str(wm2)+", W3: "+str(wm3)+", W4: "+str(wm4)
                     
                 if data[4] == -3:
-                    if wm1 == 0 and wm3 == 0 and front_left_us <= 30 and front_right_us <= 30:
+                    if front_left_us <= 20 or front_right_us <= 20:
+    #                       print("Aligning")
+                        us_data = us_data + " | Moving Back for Aligning" 
+                        wm1 = 0
+                        wm2 =3001
+                        wm3 = 0
+                        wm4 = -3001
+                    elif wm1 == 0 and wm3 == 0 and front_left_us <= 35 and front_right_us <= 35:
     #                 if wm1 == 0 and wm3 == 0 and front_left_us < 120 and front_right_us < 120:
     #                     print("Centered")
                         us_data = us_data + " | Centered"
@@ -642,18 +649,11 @@ while True:
                         drive_stat = 0
     #                     print("JOB DONE")
                         us_data = us_data + " | JOB DONE"
-    #                 if wm1 == 0 and wm3 == 0 and front_left_us > 50 and front_left_us > 50:
-    #                     wm2 = -3500
-    #                     wm4 = 3500
-                    
-#                     elif front_left_us < 25 or front_right_us < 25:
-#     #                       print("Aligning")
-#                         us_data = us_data + " | Moving Back for Aligning" 
-#                         wm1 = 0
-#                         wm2 =3001
-#                         wm3 = 0
-#                         wm4 = -3001
-                    elif front_left_us <= 30 or front_right_us <= 30:
+#                     if wm1 == 0 and wm3 == 0 and front_left_us > 50 and front_left_us > 50:
+#                      wm2 = -3500
+#                      wm4 = 3500
+#                     
+                    elif front_left_us <= 35 or front_right_us <= 35:
     #                     print("Aligning")
                         us_data = us_data + " | Aligning"
                         if wm1 < 0:
@@ -697,7 +697,7 @@ while True:
 #             print("Drive stat 2")
             us_data = us_data + " | Drive stat 2"
         elif data[0] < -11 and data[4] >= 160:  # ANTICLOCK
-            data[0] = -6 # 17
+            data[0] = -6 # 6
             data[1] = 6
             data[2] = -6
             data[3] = 6
@@ -913,3 +913,9 @@ while True:
         save_to_csv(us_data)    
 
 # ----------------- END -----------------   
+
+
+
+
+
+
