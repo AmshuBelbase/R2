@@ -1,8 +1,8 @@
 from machine import Pin
 import time, utime
 
-elevator_trig = Pin(22, Pin.OUT)
-elevator_echo = Pin(26, Pin.IN)
+elevator_trig = Pin(20, Pin.OUT)
+elevator_echo = Pin(15, Pin.IN)
 
 
 led_pin = Pin(25, Pin.OUT)

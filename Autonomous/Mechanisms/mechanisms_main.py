@@ -69,7 +69,7 @@ roller_pin1.value(0)
 roller_pin2.value(0)
  
 x_deg = roller_servo1.get_position() 
-roller = 600
+roller = 0
 while x_deg != roller:
     if(x_deg > roller):
         x_deg = x_deg -1
@@ -80,9 +80,9 @@ while x_deg != roller:
     roller_servo2.goto(y_deg)
     time.sleep_us(1000)
 
-# stepper_motor.stepper_up(2150)
+stepper_motor.stepper_up(2150)
 time.sleep(0.1)
-# stepper_motor.stepper_down(2150)
+stepper_motor.stepper_down(2150)
 push_servo1.goto(0) 
 push_servo2.goto(1000) 
 
@@ -96,7 +96,7 @@ roller_pin2.value(0)
 
 # ----------------- GLOBAL AVRIABLES -----------------
 
-drive_stat = 4
+drive_stat = 0
 
 # ----------------- USER DEFINED FUNCTIONS -----------------
 
@@ -181,7 +181,7 @@ while True:
         stepper_motor.stepper_up(900)
         push_servo1.goto(0) 
         push_servo2.goto(1000)
-        time.sleep(1)
+        time.sleep(2)
         drive_stat = 9
         message = "{}".format(drive_stat)
         print("Sent: ",message)
@@ -209,17 +209,23 @@ while True:
         roller_servo1.goto(x_deg) 
         roller_servo2.goto(y_deg)
 
-        time.sleep(1)  
+        time.sleep(1.5)  
 
         print("At 350")
         x_deg = 350    # 150
         y_deg = 1024 - x_deg
         roller_servo1.goto(x_deg) 
         roller_servo2.goto(y_deg)
+        
+#         roller_pin1.value(0)
+#         roller_pin2.value(1)
+#         time.sleep(2)
+#         roller_pin1.value(1)
+#         roller_pin2.value(0)
 
         c = 0
         start_time = utime.ticks_ms()
-        while utime.ticks_diff(utime.ticks_ms(), start_time) < 2500:  # 3000 ms = 3 seconds
+        while utime.ticks_diff(utime.ticks_ms(), start_time) < 3000:  # 3000 ms = 3 seconds
             roller_us = measure_distance(roller_trig, roller_echo)
             print("roller_us: ", roller_us)
             
@@ -236,15 +242,10 @@ while True:
                 break
 
         # If loop terminated due to timeout
-        if utime.ticks_diff(utime.ticks_ms(), start_time) >= 2500:
-            print("Loop terminated due to timeout.")
+        if utime.ticks_diff(utime.ticks_ms(), start_time) >= 3000:
+            print("Loop terminated due to timeout.") 
             roller_pin1.value(0)
-            roller_pin2.value(1)
-            print("At 0")
-            x_deg = 0    # 150
-            y_deg = 1024 - x_deg
-            roller_servo1.goto(x_deg) 
-            roller_servo2.goto(y_deg)
+            roller_pin2.value(1) 
 
 #             time.sleep(0.5)
             
@@ -260,12 +261,21 @@ while True:
 
 
             print("At 1000")
-            x_deg = 1000    # 150
+            x_deg = 1024    # 150
             y_deg = 1024 - x_deg
             roller_servo1.goto(x_deg) 
             roller_servo2.goto(y_deg)
+
         
         if drive_stat == 4: # if purple ball then again start searching
+            time.sleep(0.5)
+            print("At 0")
+            x_deg = 0    # 150
+            y_deg = 1024 - x_deg
+            roller_servo1.goto(x_deg) 
+            roller_servo2.goto(y_deg)
+            roller_pin1.value(0)
+            roller_pin2.value(1)
             drive_stat = 5
             message = "{}".format(drive_stat)
             print("Sent: ",message)
@@ -274,7 +284,8 @@ while True:
             drive_stat = 1
             time.sleep(1.5)
             
-        else:                
+        else:
+            print("At elevator")
             c = 0
             start_time = utime.ticks_ms()
             while utime.ticks_diff(utime.ticks_ms(), start_time) < 4500:  # 3000 ms = 3 seconds
@@ -290,7 +301,7 @@ while True:
                 time.sleep_ms(5)
 
                 # Check if c has been incremented 60 times (meaning elevator < 4 for 60 consecutive iterations)
-                if c > 40:
+                if c > 60:
                     break
 
             # If loop terminated due to timeout
