@@ -1,4 +1,4 @@
-# R2 Pico - DRIVE
+# R2 Pico - DRIVE 1
 from machine import Pin, PWM, UART 
 import sys
 from sys import stdin
