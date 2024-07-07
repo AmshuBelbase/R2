@@ -156,12 +156,12 @@ x, y, z = sensor.read()
 deg = sensor.get_degree(x, y, z)
 
 count=0
-range_min = 265
-range_max = 270
+range_min = 254
+range_max = 260
 
 rotate_speed = 5500
 rot_range_min = 90 
-rot_range_max = 267
+rot_range_max = 255
 # ----------------- INITIAL POSITIONS -----------------
 
 save_to_csv(" ------------------- NEW ATTEMPT -------------------")
@@ -529,15 +529,22 @@ while True:
                     
                     if not count_deg < 10:
                         break
-                    
-            if front_left_us <= 10 or front_right_us <= 10:
+            
+            if front_left_us >= 80 or front_right_us >= 80:
+                us_data = us_data + " | Forward Search Speed"
+                save_to_csv(us_data)
+                us_data = ''
+                drive(0, -15000,0, 15000)
+                time.sleep(0.25)
+                
+            elif front_left_us <= 10 or front_right_us <= 10:
                 us_data = us_data + " | Too Close Move Far "
                 save_to_csv(us_data)
                 us_data = ''
                 drive(0, 6000,0, -6000)
                 time.sleep(0.3)
                 
-            elif (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 3:
+            elif (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 4:
                 if(front_left_us > front_right_us):
     #                 print("Clockwise 1")
                     us_data = us_data + " | Clockwise 1: "
@@ -566,13 +573,13 @@ while True:
                     save_to_csv(us_data)
                     us_data = ''
                     drive(10000,0,-10000,0)
-                    time.sleep(1.5)                                     
+                    time.sleep(3)
             else:
                 us_data = us_data + " | Forward Search "
                 save_to_csv(us_data)
                 us_data = ''
-                drive(0, -6000,0, 6000)
-                time.sleep(0.3)
+                drive(0, -8000,0, 8000)
+                time.sleep(0.5)
         else:
             wm1 = int(map(data[0], -255, 255, -30000, 30000))
             wm2 = int(map(data[1], -255, 255, -30000, 30000))
@@ -582,7 +589,7 @@ while True:
             adjust = 0
             # | -1 : No Detection | -3 : Near | -4 : Far | -5 : Aligned
             
-            if data[4] != -1 and (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 3:
+            if data[4] != -1 and (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 4:
                 adjust = 1
                 if(front_left_us > front_right_us):
     #                 print("Clockwise 1")
@@ -851,7 +858,7 @@ while True:
         #         print("Go back and Rotate - BALL search")
         us_data = us_data + " | Go back and Rotate - BALL search"
         drive(0, 20000,0, -20000)
-        time.sleep(1.5)
+        time.sleep(1)
         us_data = us_data + " | Anticlockwise for 0.8 seconds 3"
         drive(-medium,medium,-medium,medium)
         time.sleep_ms(1400)
@@ -914,7 +921,7 @@ while True:
         drive(0, 30000,0, -30000)
         time.sleep(0.3)
         drive(0, -30000,0, 30000)
-        time.sleep(1.7)
+        time.sleep(2)
         us_data = us_data + " | Aligned magnetometer"
         drive(0,0,0,0)
         save_to_csv(us_data)
@@ -933,6 +940,8 @@ while True:
         save_to_csv(us_data)    
 
 # ----------------- END -----------------   
+
+
 
 
 

@@ -34,7 +34,7 @@ while True:
     sleep(0.1)
     x, y, z = sensor.read()
     deg = sensor.get_degree(x, y, z)
-    print(sensor.format_result(x, y, z))
-#     print(int(deg))
+#     print(sensor.format_result(x, y, z))
+    print(int(deg))
     
     
