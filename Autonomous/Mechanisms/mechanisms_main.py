@@ -5,15 +5,7 @@ import time
 import utime
 
 # ----------------- PINOUTS -----------------
-
-i=0
-while i<5:
-    pass_val = 0
-    message = f"{pass_val}\n" 
-    # Send the message over USB CDC (print to USB)
-    print(message, end='')
-    i+=1
-    
+ 
 time.sleep(2)
 
 uart = UART(1, baudrate=115200, tx=Pin(4), rx=Pin(5))  
@@ -356,9 +348,3 @@ while True:
 #                 push_servo2.goto(300)
         
          
-
-
-
-
-
-
