@@ -138,10 +138,10 @@ fast_med = 16000
 super_fast = 36000
 # d = 18000
 
-very_slow_us = 3500
+very_slow_us = 4000
 slow_us = 4500
 medium_us = 9000
-fast_us = 21000
+fast_us = 24000
 super_fast_us = 36000
 d = 18000
 
@@ -161,7 +161,7 @@ range_max = 270
 
 rotate_speed = 5500
 rot_range_min = 90 
-rot_range_max = 270
+rot_range_max = 267
 # ----------------- INITIAL POSITIONS -----------------
 
 save_to_csv(" ------------------- NEW ATTEMPT -------------------")
@@ -186,21 +186,23 @@ save_to_csv("Started")
 # ----------------- READ ULTRASONICS -----------------
 
 while False:
+    
+    print("loop")
+        
     left_back_us = measure_distance(left_back_trig, left_back_echo)  
     print("Left Back: ", left_back_us)
     
-    print("loop")
-    front_left_us = measure_distance(front_left_trig, front_left_echo) 
-    print("Front Left: ", front_left_us)
-
     left_front_us = measure_distance(left_front_trig, left_front_echo)  
-    print("Left Front: ", left_front_us) 
-
-    right_front_us = measure_distance(right_front_trig, right_front_echo)  
-    print("Right Front: ", right_front_us)
+    print("Left Front: ", left_front_us)
     
-#     front_right_us = measure_distance(front_right_trig, front_right_echo)
-#     print("Front Right: ", front_right_us)
+    front_left_us = measure_distance(front_left_trig, front_left_echo) 
+    print("Front Left: ", front_left_us) 
+    
+    front_right_us = measure_distance(front_right_trig, front_right_echo)
+    print("Front Right: ", front_right_us)
+    
+#     right_front_us = measure_distance(right_front_trig, right_front_echo)  
+#     print("Right Front: ", right_front_us)
 
     time.sleep_ms(10)
     
@@ -300,7 +302,7 @@ while True:
         elif(front_left_us <= 15 and front_right_us <= 15): #and right_front_us > 160
 #             print("Move Right 1")
             us_data += f" | Move Right 1"
-            drive(fast_us,0,-fast_us,0)
+            drive(22000,0,-22000,0)
         else:
 #             print("Front")
             us_data += f" | Front 1"
@@ -362,9 +364,9 @@ while True:
         us_data += f" | forward_c"+str(forward_c)
         if(forward_c >= 5):
 #             print("Moving right for 0.3 seconds 3")
-            us_data += f" | Moving right for 0.25 seconds 3"
+            us_data += f" | Moving right for 0.35 seconds 3"
             drive(medium_us,0,-medium_us,0)
-            time.sleep(0.25)
+            time.sleep(0.35)
 #             print("Moving straight for 2 seconds 3")
             us_data += f" | Moving straight for 2 seconds 3"
             drive(0,-super_fast_us,0,super_fast_us)
@@ -421,8 +423,13 @@ ranges_silo = [
 #     (20000, 62000, 0.3)
 # ]
 ranges = [
-    (0, 1000, 3),
-    (1000, 2000, 2), 
+    (0, 100, 40),
+    (0, 200, 20),
+    (0, 400, 10),
+    (0, 600, 7),
+    (0, 1000, 4),
+    (1000, 2000, 2),
+    (0, 2000, 3),
     (2000, 4000, 1.5),
     (4000, 5000, 1.2),
     (5000, 10000, 0.75),
@@ -522,14 +529,25 @@ while True:
                     
                     if not count_deg < 10:
                         break
-            
-            if front_left_us <= 20 and front_right_us <= 20:
+                    
+            if front_left_us <= 10 or front_right_us <= 10:
                 us_data = us_data + " | Too Close Move Far "
                 save_to_csv(us_data)
                 us_data = ''
                 drive(0, 6000,0, -6000)
-                time.sleep(0.5)
-            elif front_left_us <= 35 and front_right_us <= 35:
+                time.sleep(0.3)
+                
+            elif (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 3:
+                if(front_left_us > front_right_us):
+    #                 print("Clockwise 1")
+                    us_data = us_data + " | Clockwise 1: "
+                    drive(slow,-slow,slow,-slow)
+                else:
+    #                 print("Anti Clockwise 1")
+                    us_data = us_data + " | Anti Clockwise 1: "
+                    drive(-slow,slow,-slow,slow)
+                    
+            elif front_left_us <= 35 or front_right_us <= 35:
                 left_front_us = measure_distance(left_front_trig, left_front_echo)   
                 time.sleep_ms(1)
 
@@ -554,7 +572,7 @@ while True:
                 save_to_csv(us_data)
                 us_data = ''
                 drive(0, -6000,0, 6000)
-                time.sleep(0.5)
+                time.sleep(0.3)
         else:
             wm1 = int(map(data[0], -255, 255, -30000, 30000))
             wm2 = int(map(data[1], -255, 255, -30000, 30000))
@@ -588,18 +606,18 @@ while True:
                 us_data = us_data + " | Before Mapping: W1: "+str(wm1)+", W2: "+str(wm2)+", W3: "+str(wm3)+", W4: "+str(wm4)
                     
                 if data[4] == -3:
-                    if front_left_us <= 20 or front_right_us <= 20:
+                    if front_left_us <= 10 or front_right_us <= 10:
     #                       print("Aligning")
                         us_data = us_data + " | Moving Back for Aligning" 
                         wm1 = 0
                         wm2 =3001
                         wm3 = 0
                         wm4 = -3001
-                    elif wm1 == 0 and wm3 == 0 and front_left_us <= 35 and front_right_us <= 35:
+                    elif wm1 == 0 and wm3 == 0 and (front_left_us <= 20 or front_right_us <= 20):
     #                 if wm1 == 0 and wm3 == 0 and front_left_us < 120 and front_right_us < 120:
     #                     print("Centered")
                         us_data = us_data + " | Centered"
-                        while front_left_us > 12 and front_left_us > 12:
+                        while front_left_us > 8 and front_left_us > 8:
     #                         print("Moving near Silo")
                             us_data = us_data + " | Moving near Silo" 
                             save_to_csv(us_data)
@@ -653,7 +671,7 @@ while True:
 #                      wm2 = -3500
 #                      wm4 = 3500
 #                     
-                    elif front_left_us <= 35 or front_right_us <= 35:
+                    elif front_left_us <= 20 or front_right_us <= 20:
     #                     print("Aligning")
                         us_data = us_data + " | Aligning"
                         if wm1 < 0:
@@ -696,21 +714,21 @@ while True:
 #             det_c = data[4] # class of detected object
 #             print("Drive stat 2")
             us_data = us_data + " | Drive stat 2"
-        elif data[0] < -11 and data[4] >= 160:  # ANTICLOCK
+        elif data[0] < -11 and data[4] >= 200:  # ANTICLOCK
             data[0] = -6 # 6
             data[1] = 6
             data[2] = -6
             data[3] = 6
-        elif -5 < data[0] and data[4] >= 160:  # CLOCK
+        elif -5 < data[0] and data[4] >= 200:  # CLOCK
             data[0] = 6
             data[1] = -6
             data[2] = 6
             data[3] = -6
             
-        wm1 = int(map(data[0], -255, 255, -62000, 62000))
-        wm2 = int(map(data[1], -255, 255, -62000, 62000))
-        wm3 = int(map(data[2], -255, 255, -62000, 62000))
-        wm4 = int(map(data[3], -255, 255, -62000, 62000))
+        wm1 = int(map(data[0], -255, 255, -55000, 55000))
+        wm2 = int(map(data[1], -255, 255, -55000, 55000))
+        wm3 = int(map(data[2], -255, 255, -55000, 55000))
+        wm4 = int(map(data[3], -255, 255, -55000, 55000))
         
         mul_fac = 1
 #         print("Before Mapping")
@@ -893,8 +911,10 @@ while True:
         us_data = us_data + " | Sent to stop"
         save_to_csv(us_data)
         us_data = ''
+        drive(0, 30000,0, -30000)
+        time.sleep(0.3)
         drive(0, -30000,0, 30000)
-        time.sleep(1.5)
+        time.sleep(1.7)
         us_data = us_data + " | Aligned magnetometer"
         drive(0,0,0,0)
         save_to_csv(us_data)
@@ -913,6 +933,14 @@ while True:
         save_to_csv(us_data)    
 
 # ----------------- END -----------------   
+
+
+
+
+
+
+
+
 
 
 

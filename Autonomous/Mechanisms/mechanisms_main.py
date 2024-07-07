@@ -53,7 +53,6 @@ elevator_echo = Pin(28, Pin.IN)
 
 # ----------------- INITIAL POSITIONS -----------------
 
-
 drive_stat = 30
 message = "{}".format(drive_stat)
 print("Sent: ",message)
@@ -94,19 +93,8 @@ roller_pin2.value(0)
 time.sleep_ms(300)
 
 roller_pin1.value(0)
-roller_pin2.value(0)
+roller_pin2.value(0)    
 
-x_deg = roller_servo1.get_position() 
-roller = 0
-while x_deg != roller:
-    if(x_deg > roller):
-        x_deg = x_deg -1
-    else:
-        x_deg = x_deg +1 
-    y_deg = 1024 - x_deg
-    roller_servo1.goto(x_deg) 
-    roller_servo2.goto(y_deg)
-    time.sleep_us(1000)
 
 # ----------------- GLOBAL AVRIABLES -----------------
 
@@ -208,8 +196,8 @@ while True:
     if(drive_stat == 3 or drive_stat == 4):
         
         if drive_stat == 3: # if red or blue ball then feed
-            gate_servo1.goto(100) 
-            gate_servo2.goto(900)
+            gate_servo1.goto(50) 
+            gate_servo2.goto(950)
         elif drive_stat == 4: # if purple ball then discard
             gate_servo1.goto(700) 
             gate_servo2.goto(300)
@@ -306,7 +294,7 @@ while True:
                 elevator = measure_distance(elevator_trig, elevator_echo)
                 print("elevator: ", elevator)
                 
-                if elevator < 10:
+                if elevator <= 13:
                     start_time = utime.ticks_ms()
                     c += 1
                 else:
