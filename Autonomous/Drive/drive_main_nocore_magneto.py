@@ -138,7 +138,7 @@ fast_med = 16000
 super_fast = 36000
 # d = 18000
 
-very_slow_us = 4000
+very_slow_us = 4200
 slow_us = 4500
 medium_us = 9000
 fast_us = 24000
@@ -402,7 +402,7 @@ message = f"{drive_stat}\n"
 print(message, end='')
 message_bytes = message.encode('utf-8')
 uart.write(message_bytes)
-
+clear_csv(" ")
 save_to_csv(" ------------------- INSIDE AREA 3 -------------------")
 
 ranges_silo = [
@@ -450,7 +450,13 @@ ranges = [
 # drive_stat = 8  | PUT BALL IN SILO
 # drive_stat = 9  | BALL IN SILO, ROTATE AND TURN BACK
 
+clear_counter = 0
+
 while True:
+    clear_counter+=1
+    if clear_counter%250 == 0:
+        clear_csv(" ")
+        clear_counter = 0
     us_data = ''
     det_c = -1
     buffer = ''  
@@ -474,6 +480,7 @@ while True:
     
     if uart.any():
 #         print("received")
+        clear_csv(" ")
         message_bytes = uart.read()
         message = message_bytes.decode('utf-8') 
         us_data = us_data + " | received: " + str(message)
@@ -490,7 +497,7 @@ while True:
         
     if data and drive_stat == 7:
 #         print("Received data: 0: {}, 1: {}, 2: {}, 3: {}, 4: {}".format(data[0], data[1], data[2], data[3], data[4]))
-        us_data = us_data + " | Received data: 0: "+str(data[0])+", 1: "+str(data[1])+", 2: "+str(data[2])+", 3: "+str(data[3])+", 4: "+str(data[4])
+        us_data = us_data + " | Received Silo data: 0: "+str(data[0])+", 1: "+str(data[1])+", 2: "+str(data[2])+", 3: "+str(data[3])+", 4: "+str(data[4])
         
         front_left_us = measure_distance(front_left_trig, front_left_echo) 
 #         print("Front Left: ", front_left_us)
@@ -543,7 +550,7 @@ while True:
                 drive(0, -15000,0, 15000)
                 time.sleep(0.3)
                 
-            elif (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 4:
+            elif (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 3:
                 if(front_left_us > front_right_us):
     #                 print("Clockwise 1")
                     us_data = us_data + " | Clockwise 1: "
@@ -588,7 +595,7 @@ while True:
             adjust = 0
             # | -1 : No Detection | -3 : Near | -4 : Far | -5 : Aligned
             
-#             if data[4] != -1 and (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 4:
+#             if data[4] != -1 and (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 3:
 #                 adjust = 1
 #                 if(front_left_us > front_right_us):
 #     #                 print("Clockwise 1")
@@ -708,11 +715,11 @@ while True:
     #                     print("Aligning")
                         us_data = us_data + " | Aligning"
                         if wm1 < 0:
-                            wm1 = -2301
-                            wm3 = 2301
+                            wm1 = -2901
+                            wm3 = 2901
                         else:
-                            wm1 = 2301
-                            wm3 = -2301
+                            wm1 = 2901
+                            wm3 = -2901
                         wm2 = 0
                         wm4 = 0
                 
@@ -748,15 +755,15 @@ while True:
 #             print("Drive stat 2")
             us_data = us_data + " | Drive stat 2"
         elif data[0] < -11 and data[4] >= 200:  # ANTICLOCK
-            data[0] = -6.7 # 6
-            data[1] = 6.7
-            data[2] = -6.7
-            data[3] = 6.7
+            data[0] = -7.7 # 6
+            data[1] = 7.7
+            data[2] = -7.7
+            data[3] = 7.7
         elif -5 < data[0] and data[4] >= 200:  # CLOCK
-            data[0] = 6.7
-            data[1] = -6.7
-            data[2] = 6.7
-            data[3] = -6.7
+            data[0] = 7.7
+            data[1] = -7.7
+            data[2] = 7.7
+            data[3] = -7.7
             
         wm1 = int(map(data[0], -255, 255, -62000, 62000))
         wm2 = int(map(data[1], -255, 255, -62000, 62000))
@@ -812,39 +819,11 @@ while True:
         us_data = us_data + " | ------ Front ------ "
         drive(0, -10000,0, 10000)
         time.sleep(0.45)
-        
-#         if det_c > 230:
-#             us_data = us_data + " | Front > 230: "
-#             drive(0, -10000,0, 10000)
-#             time.sleep(0.35)
-#         elif det_c > 200:
-#             us_data = us_data + " | Front > 200: "
-#             drive(0, -10000,0, 10000)
-#             time.sleep(0.45)
-#         elif det_c > 170:
-#             us_data = us_data + " | Front > 170: "
-#             drive(0, -10000,0, 10000)
-#             time.sleep(0.75)
-#         else:
-#             us_data = us_data + " | Front > else: "
-#             drive(0, -12000,0, 12000)
-#             time.sleep(0.75)
+         
             
         save_to_csv(us_data)
         us_data = ''
-
-#         if det_c > 230:
-#             drive(0, -10000,0, 10000)
-#             time.sleep(0.2)
-#         elif det_c > 200:
-#             drive(0, -10000,0, 10000)
-#             time.sleep(0.4)
-#         elif det_c > 170:
-#             drive(0, -10000,0, 10000)
-#             time.sleep(0.6)
-#         else:
-#             drive(0, -12000,0, 12000)
-#             time.sleep(0.8)
+ 
             
         drive(0,0,0,0)
         
@@ -902,18 +881,7 @@ while True:
         save_to_csv(us_data)
         us_data = ''
         
-        #align to silo
-        
-#         x, y, z = sensor.read()
-#         deg = sensor.get_degree(x, y, z)
-#         count_deg = 0
-#         while not range_min <= deg <= range_max:
-#             rotate_speed = 5500
-#             drive(-slow_us,slow_us,-slow_us,slow_us)
-#             x, y, z = sensor.read()
-#             deg = sensor.get_degree(x, y, z)
-#             count_deg +=1
-
+#         align to silo 
 
         while True:
             count_deg = 0
@@ -948,6 +916,7 @@ while True:
         time.sleep(0.3)
         drive(0, -30000,0, 30000)
         time.sleep(2)
+        clear_csv(" ")
         us_data = us_data + " | Aligned magnetometer"
         drive(0,0,0,0)
         save_to_csv(us_data)
@@ -966,6 +935,10 @@ while True:
         save_to_csv(us_data)    
 
 # ----------------- END -----------------   
+
+
+
+
 
 
 

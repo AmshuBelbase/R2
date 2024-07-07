@@ -5,7 +5,7 @@ import time
 import utime
 
 # ----------------- PINOUTS -----------------
- 
+
 time.sleep(2)
 
 uart = UART(1, baudrate=115200, tx=Pin(4), rx=Pin(5))  
@@ -61,8 +61,8 @@ print("Sent: ",message)
 message_bytes = message.encode('utf-8')
 uart.write(message_bytes)
 
-gate_servo1.goto(700) 
-gate_servo2.goto(300)
+gate_servo1.goto(170) 
+gate_servo2.goto(830)
  
 
 push_servo1.goto(700) 
@@ -154,8 +154,8 @@ while True:
     if(drive_stat == 1):
         roller_pin1.value(0)
         roller_pin2.value(0)
-        gate_servo1.goto(100) 
-        gate_servo2.goto(900)
+        gate_servo1.goto(170) 
+        gate_servo2.goto(830)
         x_deg = roller_servo1.get_position() 
         roller = 300
         while x_deg != roller:
@@ -182,7 +182,9 @@ while True:
             roller_servo2.goto(y_deg)
             time.sleep_us(1000)
     if drive_stat == 8:
-        stepper_motor.stepper_up(900)
+        push_servo1.goto(1000) 
+        push_servo2.goto(0)
+        stepper_motor.stepper_up(1000)
         push_servo1.goto(0) 
         push_servo2.goto(1000)
         time.sleep(2)
@@ -198,8 +200,8 @@ while True:
     if(drive_stat == 3 or drive_stat == 4):
         
         if drive_stat == 3: # if red or blue ball then feed
-            gate_servo1.goto(50) 
-            gate_servo2.goto(950)
+            gate_servo1.goto(170) 
+            gate_servo2.goto(830)
         elif drive_stat == 4: # if purple ball then discard
             gate_servo1.goto(700) 
             gate_servo2.goto(300)
@@ -323,8 +325,6 @@ while True:
                 push_servo1.goto(700) 
                 push_servo2.goto(300)
                 
-                stepper_motor.stepper_up(1250)
-                
                 drive_stat = 6
                 message = "{}".format(drive_stat)
                 print("Sent: ",message)
@@ -336,15 +336,7 @@ while True:
                 y_deg = 1024 - x_deg
                 roller_servo1.goto(x_deg) 
                 roller_servo2.goto(y_deg)
+                
+                stepper_motor.stepper_up(1150)
         roller_pin1.value(0)
         roller_pin2.value(0)
-#                 time.sleep(1)
-#                 stepper_motor.stepper_up(900)
-#                 push_servo1.goto(0) 
-#                 push_servo2.goto(1000)
-#                 time.sleep(1)
-#                 stepper_motor.stepper_down(2150)
-#                 push_servo1.goto(700) 
-#                 push_servo2.goto(300)
-        
-         
