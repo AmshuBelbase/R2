@@ -70,7 +70,7 @@ roller_pin1.value(1)
 roller_pin2.value(0)
  
 x_deg = roller_servo1.get_position() 
-roller = 600
+roller = 0
 while x_deg != roller:
     if(x_deg > roller):
         x_deg = x_deg -1

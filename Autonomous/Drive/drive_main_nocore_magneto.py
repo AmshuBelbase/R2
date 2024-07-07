@@ -530,18 +530,17 @@ while True:
                     if not count_deg < 10:
                         break
             
-            if front_left_us >= 80 or front_right_us >= 80:
-                us_data = us_data + " | Forward Search Speed"
-                save_to_csv(us_data)
-                us_data = ''
-                drive(0, -15000,0, 15000)
-                time.sleep(0.25)
-                
-            elif front_left_us <= 10 or front_right_us <= 10:
+            if front_left_us <= 10 or front_right_us <= 10:
                 us_data = us_data + " | Too Close Move Far "
                 save_to_csv(us_data)
                 us_data = ''
                 drive(0, 6000,0, -6000)
+                time.sleep(0.1)
+            elif front_left_us >= 80 or front_right_us >= 80:
+                us_data = us_data + " | Forward Search Speed"
+                save_to_csv(us_data)
+                us_data = ''
+                drive(0, -15000,0, 15000)
                 time.sleep(0.3)
                 
             elif (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 4:
@@ -579,7 +578,7 @@ while True:
                 save_to_csv(us_data)
                 us_data = ''
                 drive(0, -8000,0, 8000)
-                time.sleep(0.5)
+                time.sleep(0.2)
         else:
             wm1 = int(map(data[0], -255, 255, -30000, 30000))
             wm2 = int(map(data[1], -255, 255, -30000, 30000))
@@ -589,16 +588,43 @@ while True:
             adjust = 0
             # | -1 : No Detection | -3 : Near | -4 : Far | -5 : Aligned
             
-            if data[4] != -1 and (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 4:
-                adjust = 1
-                if(front_left_us > front_right_us):
-    #                 print("Clockwise 1")
-                    us_data = us_data + " | Clockwise 1: "
-                    drive(slow,-slow,slow,-slow)
-                else:
-    #                 print("Anti Clockwise 1")
-                    us_data = us_data + " | Anti Clockwise 1: "
-                    drive(-slow,slow,-slow,slow)
+#             if data[4] != -1 and (front_left_us <= 80 or front_right_us <= 80) and abs(front_left_us-front_right_us) >= 4:
+#                 adjust = 1
+#                 if(front_left_us > front_right_us):
+#     #                 print("Clockwise 1")
+#                     us_data = us_data + " | Clockwise 1: "
+#                     drive(slow,-slow,slow,-slow)
+#                 else:
+#     #                 print("Anti Clockwise 1")
+#                     us_data = us_data + " | Anti Clockwise 1: "
+#                     drive(-slow,slow,-slow,slow)
+                    
+            if front_left_us <= 80 or front_right_us <= 80:
+                while True:
+                    count_deg = 0
+                    b_deg = 0
+                    x, y, z = sensor.read()
+                    deg = sensor.get_degree(x, y, z)
+                    us_data = us_data + " | Magnetometer : " + str(deg)
+                    if range_min <= deg <= range_max: 
+                        drive(0,0,0,0)
+                        while count_deg < 5 and b_deg == 0:
+                            x, y, z = sensor.read()
+                            deg = sensor.get_degree(x, y, z)
+                            if range_min <= deg <= range_max :
+                                count_deg +=1 
+                            else:
+                                b_deg = 1
+                    else: 
+                        if rot_range_min <= deg < rot_range_max:
+                            drive(3500,-3500,3500,-3500)
+                            us_data = us_data + " | Magneto 1 "
+                        else:
+                            us_data = us_data + " | Magneto 2 " 
+                            drive(-3500,3500,-3500,3500)
+                    
+                    if not count_deg < 5:
+                        break
             
             if data[4] == -5 and adjust == 0:
                 data[4] = -3
@@ -722,20 +748,20 @@ while True:
 #             print("Drive stat 2")
             us_data = us_data + " | Drive stat 2"
         elif data[0] < -11 and data[4] >= 200:  # ANTICLOCK
-            data[0] = -6 # 6
-            data[1] = 6
-            data[2] = -6
-            data[3] = 6
+            data[0] = -6.7 # 6
+            data[1] = 6.7
+            data[2] = -6.7
+            data[3] = 6.7
         elif -5 < data[0] and data[4] >= 200:  # CLOCK
-            data[0] = 6
-            data[1] = -6
-            data[2] = 6
-            data[3] = -6
+            data[0] = 6.7
+            data[1] = -6.7
+            data[2] = 6.7
+            data[3] = -6.7
             
-        wm1 = int(map(data[0], -255, 255, -55000, 55000))
-        wm2 = int(map(data[1], -255, 255, -55000, 55000))
-        wm3 = int(map(data[2], -255, 255, -55000, 55000))
-        wm4 = int(map(data[3], -255, 255, -55000, 55000))
+        wm1 = int(map(data[0], -255, 255, -62000, 62000))
+        wm2 = int(map(data[1], -255, 255, -62000, 62000))
+        wm3 = int(map(data[2], -255, 255, -62000, 62000))
+        wm4 = int(map(data[3], -255, 255, -62000, 62000))
         
         mul_fac = 1
 #         print("Before Mapping")
@@ -940,6 +966,8 @@ while True:
         save_to_csv(us_data)    
 
 # ----------------- END -----------------   
+
+
 
 
 
