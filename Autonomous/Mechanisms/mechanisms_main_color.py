@@ -7,7 +7,7 @@ import sys
 from time import sleep
 from machine import Pin, SoftI2C
 
-from tcs34725 import *  # class library
+from tcs34725 import *  # class library of color
 
 # ----------------- PINOUTS -----------------
 
