@@ -23,10 +23,10 @@ m3_dir = Pin(19, Pin.OUT)
 m4_pwm = PWM(Pin(21))
 m4_dir = Pin(5, Pin.OUT) 
 
-left_back_trig = Pin(2, Pin.OUT) #us1
+left_back_trig = Pin(2, Pin.OUT) #us1 #us6
 left_back_echo = Pin(3, Pin.IN)
 
-left_front_trig = Pin(6, Pin.OUT) #us2
+left_front_trig = Pin(6, Pin.OUT) #us2 #us5
 left_front_echo = Pin(7, Pin.IN)
 
 front_left_trig = Pin(10, Pin.OUT) #us3  
@@ -301,8 +301,8 @@ while True:
             drive(0,slow_us,0,-slow_us)
         elif(front_left_us <= 15 and front_right_us <= 15): #and right_front_us > 160
 #             print("Move Right 1")
-            us_data += f" | Move Right 1"
-            drive(22000,0,-22000,0)
+            us_data += f" | Move Left 1"
+            drive(-22000,0,22000,0)
         else:
 #             print("Front")
             us_data += f" | Front 1"
@@ -310,23 +310,23 @@ while True:
     elif(left_front_us <= 65 and left_back_us <= 65):
         if(abs(left_front_us-left_back_us) >= 4):
             if(left_back_us > left_front_us):
-#                 print("Clockwise 2")
-                us_data += f" | Clockwise 2"
-                drive(slow_us,-slow_us,slow_us,-slow_us)
-            else:
 #                 print("Anti Clockwise 2")
                 us_data += f" | Anti Clockwise 2"
                 drive(-slow_us,slow_us,-slow_us,slow_us)
+            else:
+#                 print("Clockwise 2")
+                us_data += f" | Clockwise 2"
+                drive(slow_us,-slow_us,slow_us,-slow_us)
         elif(left_front_us <= 10 and left_back_us <= 10):
-#             print("Diagonal Front Right 2")
-            us_data += f" | Diagonal Front Right 2"
-            drive(medium_us,-medium_us,-medium_us,medium_us)
+#             print("Diagonal Front Left 2")
+            us_data += f" | Diagonal Front Left 2"
+            drive(-medium_us,-medium_us,medium_us,medium_us)
         elif(left_front_us <= 27 and left_back_us <= 27):
 #             print("Straight 2")
             us_data += f" | Straight 2"
             drive(0,-d,0,d)
         else:
-#             print("Diagonal Front Left 2")
+#             print("Diagonal Front Right 2")
             us_data += f" | Diagonal Front Left 2"
             drive(-medium_us,-medium_us,medium_us,medium_us)
 #         elif(right_front_us >=118 and right_front_us <=128):
@@ -351,10 +351,10 @@ while True:
 #         elif(right_front_us <= 160):
 #             print("Moving right 5")
 #             drive(slow_us,0,-slow_us,0)
-    elif(front_right_us > 45 and front_left_us < 45):
+    elif(front_right_us < 45 and front_left_us > 45):
 #         print("Moving right 6")
-        us_data += f" | Moving Right 6"
-        drive(very_slow_us,0,-very_slow_us,0)
+        us_data += f" | Moving Left 6"
+        drive(-very_slow_us,0,very_slow_us,0)
     elif(front_left_us >= 45 and front_right_us >= 45):
 #         print("Stop 3")
         us_data += f" | Stop 3"
@@ -364,16 +364,16 @@ while True:
         us_data += f" | forward_c"+str(forward_c)
         if(forward_c >= 5):
 #             print("Moving right for 0.3 seconds 3")
-            us_data += f" | Moving right for 0.35 seconds 3"
-            drive(medium_us,0,-medium_us,0)
+            us_data += f" | Moving left for 0.35 seconds 3"
+            drive(-medium_us,0,medium_us,0)
             time.sleep(0.35)
 #             print("Moving straight for 2 seconds 3")
             us_data += f" | Moving straight for 2 seconds 3"
             drive(0,-super_fast_us,0,super_fast_us)
             time.sleep(2)
-#             print("Anticlockwise for 0.8 seconds 3")
-            us_data += f" | Anticlockwise for 0.8 seconds 3"
-            drive(-medium_us,medium_us,-medium_us,medium_us)
+#             print("clockwise for 0.8 seconds 3")
+            us_data += f" | clockwise for 0.8 seconds 3"
+            drive(medium_us,-medium_us,medium_us,-medium_us)
             time.sleep_ms(800) 
             drive(0,-super_fast_us,0,super_fast_us)
             time.sleep(1.8)
@@ -402,6 +402,7 @@ message = f"{drive_stat}\n"
 print(message, end='')
 message_bytes = message.encode('utf-8')
 uart.write(message_bytes)
+
 clear_csv(" ")
 save_to_csv(" ------------------- INSIDE AREA 3 -------------------")
 
@@ -938,8 +939,7 @@ while True:
     else:
         save_to_csv(us_data)    
 
-# ----------------- END -----------------   
-
+# ----------------- END -----------------
 
 
 

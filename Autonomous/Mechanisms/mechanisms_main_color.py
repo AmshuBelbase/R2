@@ -211,7 +211,7 @@ while True:
         gate_servo1.goto(120) 
         gate_servo2.goto(880)
         x_deg = roller_servo1.get_position() 
-        roller = 300
+        roller = 350
         while x_deg != roller:
             if(x_deg > roller):
                 x_deg = x_deg -1
@@ -319,7 +319,7 @@ while True:
                 
                 print(" Clear   Red Green  Blue    gain  >")
                 try:
-                    while count_color <=30:
+                    while count_color <=20:
                         count_color +=1
                         """ show color counts """
                         counts_tuple = tcs.colors  # obtain all counts
@@ -353,7 +353,7 @@ while True:
                              """
 
                         print("    ({:2d})  {:s}" .format(tcs.gain_factor, color))
-                        sleep(0.15)  # interval between reads
+                        sleep(0.1)  # interval between reads
 
                 except KeyboardInterrupt:
                     print("Closing down!")
@@ -362,7 +362,7 @@ while True:
                     print("Exception:", err)
                     
                     
-                if count_color_seq <= 23:
+                if count_color_seq <= 13:
                     gate_servo1.goto(700) 
                     gate_servo2.goto(300)
                     drive_stat = 4
@@ -398,6 +398,11 @@ while True:
             message_bytes = message.encode('utf-8')
             uart.write(message_bytes)
             drive_stat = 1
+            print("At 0")
+            x_deg = 350    # 150
+            y_deg = 1024 - x_deg
+            roller_servo1.goto(x_deg) 
+            roller_servo2.goto(y_deg)
             time.sleep(1.5)
             
         else:
@@ -450,4 +455,6 @@ while True:
                 stepper_motor.stepper_up(1150)
         roller_pin1.value(0)
         roller_pin2.value(0)
+
+
 
