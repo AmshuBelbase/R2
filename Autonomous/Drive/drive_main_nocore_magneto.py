@@ -169,15 +169,15 @@ save_to_csv(" ------------------- NEW ATTEMPT -------------------")
 save_to_csv("Warming Up")
 drive(0,0,0,0)
 
-i = 1
-time_s = 1     
-led_pin.value(0)
-while i<=time_s:
-    i=i+1
-    led_pin.value(1)
-    time.sleep_ms(500)
-    led_pin.value(0)
-    time.sleep_ms(500)
+# i = 1
+# time_s = 1     
+# led_pin.value(0)
+# while i<=time_s:
+#     i=i+1
+#     led_pin.value(1)
+#     time.sleep_ms(500)
+#     led_pin.value(0)
+#     time.sleep_ms(500)
 led_pin.value(1)
 
 # print("Started")
