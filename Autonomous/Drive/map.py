@@ -17,10 +17,10 @@ ranges = [
 def map(val, loval, hival, tolow, tohigh):
     return (val - loval) / (hival - loval) * (tohigh - tolow) + tolow
 
-wm1 = int(map(7, -255, 255, -62000, 62000))
-wm2 = int(map(-7, -255, 255, -62000, 62000))
-wm3 = int(map(7, -255, 255, -62000, 62000))
-wm4 = int(map(-6.7, -255, 255, -62000, 62000))
+wm1 = int(map(30, -255, 255, -62000, 62000))
+wm2 = int(map(-7.7, -255, 255, -62000, 62000))
+wm3 = int(map(7.5, -255, 255, -62000, 62000))
+wm4 = int(map(-7.5, -255, 255, -62000, 62000))
 mul_fac = 1
 print("Before Mapping")
 print("W1: {}, W2: {}, W3: {}, W4: {}".format(wm1,wm2,wm3,wm4))
