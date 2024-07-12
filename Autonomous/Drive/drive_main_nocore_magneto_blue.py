@@ -392,7 +392,6 @@ while True:
         us_data += f" | garbage_c"+str(garbage_c)
     save_to_csv(us_data)   
     time.sleep_ms(2)
-
 us_data = ''
 message = "{}".format(drive_stat)
 us_data = us_data + " | message: " + str(message)
@@ -402,7 +401,6 @@ message = f"{drive_stat}\n"
 print(message, end='')
 message_bytes = message.encode('utf-8')
 uart.write(message_bytes)
-
 clear_csv(" ")
 save_to_csv(" ------------------- INSIDE AREA 3 -------------------")
 
@@ -570,16 +568,16 @@ while True:
                 
                 if left_front_us > 25 and left_back_us > 25:
                     #go left
-                    us_data = us_data + " | Left Search "
-                    save_to_csv(us_data)
-                    us_data = ''
-                    drive(-15000,0,15000,0) 
-                else:
-                    #go right for 2 seconds
                     us_data = us_data + " | Right Search "
                     save_to_csv(us_data)
                     us_data = ''
-                    drive(10000,0,-10000,0)
+                    drive(15000,0,-15000,0) 
+                else:
+                    #go right for 2 seconds
+                    us_data = us_data + " | Left Search "
+                    save_to_csv(us_data)
+                    us_data = ''
+                    drive(-10000,0,10000,0)
                     time.sleep(5)
             else:
                 us_data = us_data + " | Forward Search "
@@ -882,7 +880,7 @@ while True:
 #         print("Go back for ZED - SILO view")
         us_data = us_data + " | Go back for ZED - SILO view"
         drive(0, 35000,0, -35000)
-        time.sleep(0.2)
+        time.sleep(0.35)
         save_to_csv(us_data)
         us_data = ''
         
@@ -939,29 +937,4 @@ while True:
     else:
         save_to_csv(us_data)    
 
-# ----------------- END -----------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# ----------------- END -----------------   

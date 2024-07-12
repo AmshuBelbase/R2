@@ -136,16 +136,25 @@ def detect_color(counts_history):
                 
             
     
-    if p_max:
-        return "Purple"
-    elif r_max:
+    if counts[1]/counts[2] > 3:
         return "Red"
-    elif g_max:
-        return "-"
-    elif b_max:
-        return "Blue"
+    elif counts[1]/counts[2] >= 1.75:
+        return "Purple"
+    elif counts[1]/counts[2] < 1.75:
+        return "Blue"       
     else:
-        return "-"
+        return "-"       
+    
+#     if p_max:
+#         return "Purple"
+#     elif r_max:
+#         return "Red"
+#     elif g_max:
+#         return "-"
+#     elif b_max:
+#         return "Blue"
+#     else:
+#         return "-"
 
 def measure_distance(trigger, echo):
     # Send a 10us pulse to trigger the sensor
