@@ -881,7 +881,7 @@ while True:
 #         print("Go back for ZED - SILO view")
         us_data = us_data + " | Go back for ZED - SILO view"
         drive(0, 35000,0, -35000)
-        time.sleep(0.2)
+        time.sleep(0.35)
         save_to_csv(us_data)
         us_data = ''
         
