@@ -42,19 +42,26 @@ def detect_color(counts_history):
     b_max = all(counts[3] > counts[1] and counts[3] > counts[2] for counts in counts_history)
     '''
     
-                
-            
     
-    if p_max:
-        return "Purple"
-    elif r_max:
+    if counts[1]/counts[2] > 3:
         return "Red"
-    elif g_max:
-        return "-"
-    elif b_max:
-        return "Blue"
+    elif counts[1]/counts[2] >= 1.75:
+        return "Purple"
+    elif counts[1]/counts[2] < 1.75:
+        return "Blue"       
     else:
-        return "-"
+        return "-"       
+    
+#     if p_max:
+#         return "Purple"
+#     elif r_max:
+#         return "Red"
+#     elif g_max:
+#         return "-"
+#     elif b_max:
+#         return "Blue"
+#     else:
+#         return "-"
 
 def main():
     print("Starting tcs34725_test program")
