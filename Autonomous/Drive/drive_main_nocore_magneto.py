@@ -311,7 +311,7 @@ while True:
 #             print("Front")
             us_data += f" | Front 1"
             drive(0,-very_slow_us,0,very_slow_us)
-    elif(left_front_us <= 45 and left_back_us <= 45):
+    elif(left_front_us <= 65 and left_back_us <= 65):
         if(abs(left_front_us-left_back_us) >= 4):
             if(left_back_us > left_front_us):
 #                 print("Clockwise 2")
@@ -359,9 +359,9 @@ while True:
 #         print("Moving right 6")
         us_data += f" | Moving Right 6"
         drive(very_slow_us,0,-very_slow_us,0)
-    elif(front_left_us >= 45 and front_right_us >= 45):
+    elif(front_left_us >= 45 and front_right_us >= 45)
         if not area_one_two:
-            us_data += f" | Moving straight for 2 seconds 3"
+            us_data += f" | Moving straight to clear Ramp 1"
             drive(0,-super_fast_us,0,super_fast_us)
         else:
     #         print("Stop 3")
@@ -391,7 +391,10 @@ while True:
                 drive(0,0,0,0)
                 drive_stat = 1 #1
                 us_data += f" | Drive Stat 1 & break"
-                break 
+                break
+    elif (front_left_us >= 45 or front_right_us >= 45) and not area_one_two::
+        us_data += f" | Moving straight to clear Ramp 1"
+        drive(0,-super_fast_us,0,super_fast_us)
     else:
 #         print("Stop - Confused 7")
         us_data += f" | Stop - Confused 7"

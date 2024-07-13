@@ -310,7 +310,7 @@ while True:
 #             print("Front")
             us_data += f" | Front 1"
             drive(0,-very_slow_us,0,very_slow_us)
-    elif(left_front_us <= 45 and left_back_us <= 45):
+    elif(left_front_us <= 65 and left_back_us <= 65):
         if(abs(left_front_us-left_back_us) >= 4):
             if(left_back_us > left_front_us):
 #                 print("Anti Clockwise 2")
@@ -379,15 +379,6 @@ while True:
                 drive(0,-super_fast_us,0,super_fast_us)
                 time.sleep(2)
                 
-                
-                
-                left_front_us = measure_distance(left_front_trig, left_front_echo)  
-                us_data += f" | Left Front: "+str(left_front_us)
-                time.sleep_ms(1)
-                
-                left_back_us = measure_distance(left_back_trig, left_back_echo) 
-                us_data += f" | Left Back: "+str(left_back_us)
-                time.sleep_ms(1) 
     #             print("clockwise for 0.8 seconds 3")
                 us_data += f" | clockwise for 0.8 seconds 3"
                 drive(medium_us,-medium_us,medium_us,-medium_us)
@@ -399,7 +390,10 @@ while True:
                 drive(0,0,0,0)
                 drive_stat = 1 #1
                 us_data += f" | Drive Stat 1 & break"
-                break 
+                break
+    elif (front_left_us >= 45 or front_right_us >= 45) and not area_one_two::
+        us_data += f" | Moving straight to clear Ramp 1"
+        drive(0,-super_fast_us,0,super_fast_us)
     else:
 #         print("Stop - Confused 7")
         us_data += f" | Stop - Confused 7"
