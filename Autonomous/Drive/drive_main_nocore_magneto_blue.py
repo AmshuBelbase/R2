@@ -162,6 +162,8 @@ range_max = 260
 rotate_speed = 5500
 rot_range_min = 90 
 rot_range_max = 255
+
+area_one_two = False
 # ----------------- INITIAL POSITIONS -----------------
 
 save_to_csv(" ------------------- NEW ATTEMPT -------------------")
@@ -303,11 +305,12 @@ while True:
 #             print("Move Right 1")
             us_data += f" | Move Left 1"
             drive(-22000,0,22000,0)
+            area_one_two = True
         else:
 #             print("Front")
             us_data += f" | Front 1"
             drive(0,-very_slow_us,0,very_slow_us)
-    elif(left_front_us <= 65 and left_back_us <= 65):
+    elif(left_front_us <= 45 and left_back_us <= 45):
         if(abs(left_front_us-left_back_us) >= 4):
             if(left_back_us > left_front_us):
 #                 print("Anti Clockwise 2")
@@ -356,33 +359,47 @@ while True:
         us_data += f" | Moving Left 6"
         drive(-very_slow_us,0,very_slow_us,0)
     elif(front_left_us >= 45 and front_right_us >= 45):
-#         print("Stop 3")
-        us_data += f" | Stop 3"
-        drive(0,0,0,0)
-        forward_c += 1
-#         print("forward_c:",forward_c)
-        us_data += f" | forward_c"+str(forward_c)
-        if(forward_c >= 5):
-#             print("Moving right for 0.3 seconds 3")
-            us_data += f" | Moving left for 0.35 seconds 3"
-            drive(-medium_us,0,medium_us,0)
-            time.sleep(0.35)
-#             print("Moving straight for 2 seconds 3")
+        if not area_one_two:
             us_data += f" | Moving straight for 2 seconds 3"
             drive(0,-super_fast_us,0,super_fast_us)
-            time.sleep(2)
-#             print("clockwise for 0.8 seconds 3")
-            us_data += f" | clockwise for 0.8 seconds 3"
-            drive(medium_us,-medium_us,medium_us,-medium_us)
-            time.sleep_ms(800) 
-            drive(0,-super_fast_us,0,super_fast_us)
-            time.sleep(1.8)
-            us_data += f" | Stop"
-#             print("Stop 3") 
+        else:
+    #         print("Stop 3")
+            us_data += f" | Stop 3"
             drive(0,0,0,0)
-            drive_stat = 1 #1
-            us_data += f" | Drive Stat 1 & break"
-            break 
+            forward_c += 1
+    #         print("forward_c:",forward_c)
+            us_data += f" | forward_c"+str(forward_c)
+            if(forward_c >= 5):
+    #             print("Moving right for 0.3 seconds 3")
+                us_data += f" | Moving left for 0.35 seconds 3"
+                drive(-medium_us,0,medium_us,0)
+                time.sleep(0.35)
+    #             print("Moving straight for 2 seconds 3")
+                us_data += f" | Moving straight for 2 seconds 3"
+                drive(0,-super_fast_us,0,super_fast_us)
+                time.sleep(2)
+                
+                
+                
+                left_front_us = measure_distance(left_front_trig, left_front_echo)  
+                us_data += f" | Left Front: "+str(left_front_us)
+                time.sleep_ms(1)
+                
+                left_back_us = measure_distance(left_back_trig, left_back_echo) 
+                us_data += f" | Left Back: "+str(left_back_us)
+                time.sleep_ms(1) 
+    #             print("clockwise for 0.8 seconds 3")
+                us_data += f" | clockwise for 0.8 seconds 3"
+                drive(medium_us,-medium_us,medium_us,-medium_us)
+                time.sleep_ms(800) 
+                drive(0,-super_fast_us,0,super_fast_us)
+                time.sleep(1.8)
+                us_data += f" | Stop"
+    #             print("Stop 3") 
+                drive(0,0,0,0)
+                drive_stat = 1 #1
+                us_data += f" | Drive Stat 1 & break"
+                break 
     else:
 #         print("Stop - Confused 7")
         us_data += f" | Stop - Confused 7"
