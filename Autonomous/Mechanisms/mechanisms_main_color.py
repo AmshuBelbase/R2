@@ -88,9 +88,10 @@ while x_deg != roller:
     roller_servo2.goto(y_deg)
     time.sleep_us(1000)
     
-# stepper_motor.stepper_up(2150)
+stepper_motor.stepper_up(2150)
 time.sleep(0.1)
-# stepper_motor.stepper_down(2150)
+stepper_motor.stepper_down(2150)
+# stepper_motor.stepper_down(1150)
 push_servo1.goto(0) 
 push_servo2.goto(1000) 
 
@@ -136,11 +137,11 @@ def detect_color(counts_history):
                 
             
     
-    if counts[1]/counts[2] > 3:
+    if counts[1]/counts[2] > 2:
         return "Red"
-    elif counts[1]/counts[2] >= 1.75:
+    elif counts[1]/counts[2] >= 1.25:#1.4
         return "Purple"
-    elif counts[1]/counts[2] < 1.75:
+    elif counts[1]/counts[2] < 1.25:
         return "Blue"       
     else:
         return "-"       
@@ -352,7 +353,7 @@ while True:
                         green = counts[2]
                         blue = counts[3]
                         
-                        if color == "Blue" or color == "Red":
+                        if color == "Blue":
                             count_color_seq +=1
                         else:
                             count_color_seq = 0
@@ -464,6 +465,7 @@ while True:
                 stepper_motor.stepper_up(1150)
         roller_pin1.value(0)
         roller_pin2.value(0)
+
 
 
 

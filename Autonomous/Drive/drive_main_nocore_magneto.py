@@ -156,12 +156,12 @@ x, y, z = sensor.read()
 deg = sensor.get_degree(x, y, z)
 
 count=0
-range_min = 254
-range_max = 260
+range_min = 14
+range_max = 20
 
 rotate_speed = 5500
-rot_range_min = 90 
-rot_range_max = 255
+rot_range_min = 22 
+rot_range_max = 196
 
 area_one_two = False
 
@@ -207,7 +207,7 @@ while False:
 #     right_front_us = measure_distance(right_front_trig, right_front_echo)  
 #     print("Right Front: ", right_front_us)
 
-    time.sleep_ms(10)
+    time.sleep_ms(500)
     
 
 
@@ -305,7 +305,7 @@ while True:
         elif(front_left_us <= 15 and front_right_us <= 15): #and right_front_us > 160
 #             print("Move Right 1")
             us_data += f" | Move Right 1"
-            drive(22000,0,-22000,0)
+            drive(12000,0,-12000,0)
             area_one_two = True
         else:
 #             print("Front")
@@ -359,7 +359,7 @@ while True:
 #         print("Moving right 6")
         us_data += f" | Moving Right 6"
         drive(very_slow_us,0,-very_slow_us,0)
-    elif(front_left_us >= 45 and front_right_us >= 45)
+    elif(front_left_us >= 45 and front_right_us >= 45):
         if not area_one_two:
             us_data += f" | Moving straight to clear Ramp 1"
             drive(0,-super_fast_us,0,super_fast_us)
@@ -385,15 +385,15 @@ while True:
                 drive(-medium_us,medium_us,-medium_us,medium_us)
                 time.sleep_ms(800) 
                 drive(0,-super_fast_us,0,super_fast_us)
-                time.sleep(1.8)
+                time.sleep(1.4)
                 us_data += f" | Stop"
     #             print("Stop 3") 
                 drive(0,0,0,0)
                 drive_stat = 1 #1
                 us_data += f" | Drive Stat 1 & break"
                 break
-    elif (front_left_us >= 45 or front_right_us >= 45) and not area_one_two::
-        us_data += f" | Moving straight to clear Ramp 1"
+    elif (front_left_us >= 45 or front_right_us >= 45) and not area_one_two:
+        us_data += f" | Moving straight to clear Ramp 2"
         drive(0,-super_fast_us,0,super_fast_us)
     else:
 #         print("Stop - Confused 7")
@@ -540,11 +540,11 @@ while True:
                                 b_deg = 1
                     else: 
                         if rot_range_min <= deg < rot_range_max:
-                            drive(3500,-3500,3500,-3500)
+                            drive(-3500,3500,-3500,3500)
                             us_data = us_data + " | Magneto 1 "
                         else:
                             us_data = us_data + " | Magneto 2 " 
-                            drive(-3500,3500,-3500,3500)
+                            drive(3500,-3500,3500,-3500)
                     
                     if not count_deg < 10:
                         break
@@ -951,30 +951,3 @@ while True:
         save_to_csv(us_data)    
 
 # ----------------- END -----------------   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

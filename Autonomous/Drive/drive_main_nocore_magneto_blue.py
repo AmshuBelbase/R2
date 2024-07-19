@@ -141,7 +141,7 @@ super_fast = 36000
 very_slow_us = 5500
 slow_us = 4500
 medium_us = 9000
-fast_us = 24000
+fast_us = 25000
 super_fast_us = 36000
 d = 18000
 
@@ -156,12 +156,12 @@ x, y, z = sensor.read()
 deg = sensor.get_degree(x, y, z)
 
 count=0
-range_min = 254
-range_max = 260
+range_min = 28
+range_max = 36
 
 rotate_speed = 5500
-rot_range_min = 90 
-rot_range_max = 255
+rot_range_min = 32 
+rot_range_max = 212
 
 area_one_two = False
 # ----------------- INITIAL POSITIONS -----------------
@@ -190,9 +190,6 @@ save_to_csv("Started")
 while False:
     
     print("loop")
-        
-    left_back_us = measure_distance(left_back_trig, left_back_echo)  
-    print("Left Back: ", left_back_us)
     
     left_front_us = measure_distance(left_front_trig, left_front_echo)  
     print("Left Front: ", left_front_us)
@@ -202,11 +199,14 @@ while False:
     
     front_right_us = measure_distance(front_right_trig, front_right_echo)
     print("Front Right: ", front_right_us)
+        
+    left_back_us = measure_distance(left_back_trig, left_back_echo)  
+    print("Left Back: ", left_back_us)
     
 #     right_front_us = measure_distance(right_front_trig, right_front_echo)  
 #     print("Right Front: ", right_front_us)
 
-    time.sleep_ms(10)
+    time.sleep_ms(500)
     
 
 
@@ -360,7 +360,7 @@ while True:
         drive(-very_slow_us,0,very_slow_us,0)
     elif(front_left_us >= 45 and front_right_us >= 45):
         if not area_one_two:
-            us_data += f" | Moving straight for 2 seconds 3"
+            us_data += f" | Moving straight to clear Ramp 1"
             drive(0,-super_fast_us,0,super_fast_us)
         else:
     #         print("Stop 3")
@@ -384,15 +384,15 @@ while True:
                 drive(medium_us,-medium_us,medium_us,-medium_us)
                 time.sleep_ms(800) 
                 drive(0,-super_fast_us,0,super_fast_us)
-                time.sleep(1.8)
+                time.sleep(1.4)
                 us_data += f" | Stop"
     #             print("Stop 3") 
                 drive(0,0,0,0)
                 drive_stat = 1 #1
                 us_data += f" | Drive Stat 1 & break"
                 break
-    elif (front_left_us >= 45 or front_right_us >= 45) and not area_one_two::
-        us_data += f" | Moving straight to clear Ramp 1"
+    elif (front_left_us >= 45 or front_right_us >= 45) and not area_one_two:
+        us_data += f" | Moving straight to clear Ramp 2"
         drive(0,-super_fast_us,0,super_fast_us)
     else:
 #         print("Stop - Confused 7")
@@ -538,11 +538,11 @@ while True:
                                 b_deg = 1
                     else: 
                         if rot_range_min <= deg < rot_range_max:
-                            drive(3500,-3500,3500,-3500)
+                            drive(-3500,3500,-3500,3500)
                             us_data = us_data + " | Magneto 1 "
                         else:
                             us_data = us_data + " | Magneto 2 " 
-                            drive(-3500,3500,-3500,3500)
+                            drive(3500,-3500,3500,-3500)
                     
                     if not count_deg < 10:
                         break

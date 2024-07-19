@@ -68,18 +68,34 @@ class HMC5883L:
 # ys=1.025552
 # yb=-283.65
 
+
+
+# Calibration corrections:
+    xs=1
+    xb=-86.62
+    ys=1.108949
+    yb=164.7
+
+# xs=1
+# xb=-86.62
+# ys=1.097889
+# yb=165.31
+
 #     xs=1
 #     xb=0
 #     ys=1
 #     yb=0
 
-    xs=1
-    xb=-170.8
-    ys=1.030391
-    yb=116.51
+
+# working values
+
+#     xs=1
+#     xb=-170.8
+#     ys=1.030391
+#     yb=116.51
     
     # 0x1e
-    def __init__(self, scl=22, sda=26, address=0x1e, gauss='1.9', declination=(-1, 15)):
+    def __init__(self, scl=22, sda=26, address=0x1e, gauss='1.9', declination=(1, 45)):
         self.i2c = i2c = machine.SoftI2C(scl=machine.Pin(scl), sda=machine.Pin(sda), freq=15000)
 #         self.i2c = i2c = machine.I2C(1, scl=machine.Pin(15), sda=machine.Pin(14))
 
@@ -155,3 +171,4 @@ class HMC5883L:
     def format_result(self, x, y, z):
         degrees, minutes = self.heading(x, y)
         return 'X: {:.4f}, Y: {:.4f}, Z: {:.4f}, Heading: {}° {}′ '.format(x, y, z, degrees, minutes)
+
